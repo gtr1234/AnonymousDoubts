@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "495275804278",
+    "firebase_url": "https://anonymousdoubts.firebaseio.com",
+    "project_id": "anonymousdoubts",
+    "storage_bucket": "anonymousdoubts.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:495275804278:android:94fb382a87e34862",
+        "android_client_info": {
+          "package_name": "com.example.karthik.anonymousdoubts"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "495275804278-u2gfofi0rr3vn2tul45h6t0vq3u2583s.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBSrhiWJM2zNF6DBAc5-RuN791rEET-M5g"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
