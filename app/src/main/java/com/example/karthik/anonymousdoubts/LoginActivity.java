@@ -89,11 +89,23 @@ public class LoginActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_SIGNUP) {
             if (resultCode == RESULT_OK) {
-
+                Log.e(TAG,"all okay");
                 // TODO: Implement successful signup logic here
                 // By default we just finish the Activity and log them in automatically
+
+                Intent myIntent = new Intent(LoginActivity.this, CourseHomepageActivity.class);
+                // myIntent.putExtra("key", value); // should send user details
+                LoginActivity.this.startActivity(myIntent);
+
                 this.finish();
+
             }
+            else{
+                Log.e(TAG,"no ok");
+            }
+        }
+        else{
+            Log.e(TAG,"no signup");
         }
     }
 
@@ -105,6 +117,10 @@ public class LoginActivity extends AppCompatActivity {
 
     public void onLoginSuccess() {
         loginButton.setEnabled(true);
+        Log.e(TAG,"came here");
+        Intent myIntent = new Intent(LoginActivity.this, CourseHomepageActivity.class);
+        // myIntent.putExtra("key", value); // should send user details
+        LoginActivity.this.startActivity(myIntent);
         finish();
     }
 
