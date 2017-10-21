@@ -26,6 +26,8 @@ public class LoginActivity extends AppCompatActivity {
     private static final String TAG = "LoginActivity";
     private static final int REQUEST_SIGNUP = 0;
 
+    private FirebaseAuth.AuthStateListener mAuthListener;
+
     EditText emailText;
     EditText passwordText;
     Button loginButton;
@@ -64,10 +66,21 @@ public class LoginActivity extends AppCompatActivity {
                 // Start the Signup activity
                 Intent intent = new Intent(getApplicationContext(), SignupActivity.class);
                 startActivityForResult(intent, REQUEST_SIGNUP);
-                finish();
+                //finish();
                 overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
             }
         });
+
+        mAuthListener = new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                FirebaseUser user = firebaseAuth.getCurrentUser();
+                if(user != null){
+                    onLoginSuccess();
+                }
+            }
+        };
+
     }
 
     // [START on_start_check_user]
@@ -78,15 +91,22 @@ public class LoginActivity extends AppCompatActivity {
         // Check if user is signed in (non-null) and update UI accordingly.  AuthStateListener Imp
         FirebaseUser currentUser = mAuth.getCurrentUser();
 
-        if(currentUser != null){
-            onLoginSuccess();
-        }
+        mAuth.addAuthStateListener(mAuthListener);
     }
     // [END on_start_check_user]
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (mAuthListener != null) {
+            mAuth.removeAuthStateListener(mAuthListener);
+        }
+    }
 
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Log.e(TAG,"req "+requestCode+" res "+resultCode);
         if (requestCode == REQUEST_SIGNUP) {
             if (resultCode == RESULT_OK) {
                 Log.e(TAG,"all okay");
