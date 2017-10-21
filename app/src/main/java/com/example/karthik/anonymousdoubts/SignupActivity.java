@@ -137,6 +137,7 @@ public class SignupActivity extends AppCompatActivity implements AdapterView.OnI
         String institution = email.split("@")[1];
         institution = institution.replace(".","");
 
+
         if(isTeacher){
             Teacher teacher = new Teacher(email, name);
             mFirebaseDatabaseReference.child(institution).child("users").child("teachers").child(uId).setValue(teacher);
@@ -254,10 +255,14 @@ public class SignupActivity extends AppCompatActivity implements AdapterView.OnI
         // On selecting a spinner item
         String item = parent.getItemAtPosition(position).toString();
 
-        if(item.equals("Teacher"))
+        if(item.equals("Teacher")) {
             isTeacher = true;
-        else if(item.equals("Student"))
+            isStudent = false;
+        }
+        else if(item.equals("Student")) {
             isStudent = true;
+            isTeacher = false;
+        }
 
     }
 

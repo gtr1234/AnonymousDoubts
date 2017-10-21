@@ -77,7 +77,10 @@
             android:id="@+id/spinner"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:prompt="@string/chooseRoles" />
+            android:layout_marginBottom="5dp"
+            android:layout_marginTop="10dp"
+            android:prompt="@string/chooseRoles"
+            android:spinnerMode="dialog" />
 
         <android.support.v7.widget.AppCompatButton
             android:id="@+id/btn_signup"
