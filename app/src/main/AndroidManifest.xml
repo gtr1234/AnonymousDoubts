@@ -32,7 +32,10 @@
         <activity
             android:name=".CourseHomepageActivity"
             android:theme="@style/AppTheme.Dark" />
-
+        <activity
+            android:name=".CourseDiscovery"
+            android:label="@string/title_activity_course_discovery"
+            android:theme="@style/AppTheme.Dark"></activity>
     </application>
 
 </manifest>

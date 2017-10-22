@@ -10,4 +10,5 @@
     <string name="about">About</string>
     <string name="students">Students</string>
     <string name="chooseRoles">Choose your Role</string>
+    <string name="title_activity_course_discovery">CourseDiscovery</string>
 </resources>

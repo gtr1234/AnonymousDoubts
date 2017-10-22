@@ -17,6 +17,8 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
+import com.google.firebase.auth.FirebaseAuthInvalidUserException;
 import com.google.firebase.auth.FirebaseUser;
 
 
@@ -113,7 +115,7 @@ public class LoginActivity extends AppCompatActivity {
                 // TODO: Implement successful signup logic here
                 // By default we just finish the Activity and log them in automatically
 
-                Intent myIntent = new Intent(LoginActivity.this, CourseHomepageActivity.class);
+                Intent myIntent = new Intent(LoginActivity.this, CourseDiscovery.class);
                 // myIntent.putExtra("key", value); // should send user details
                 LoginActivity.this.startActivity(myIntent);
 
@@ -138,14 +140,14 @@ public class LoginActivity extends AppCompatActivity {
     public void onLoginSuccess() {
         loginButton.setEnabled(true);
         Log.e(TAG,"came here");
-        Intent myIntent = new Intent(LoginActivity.this, CourseHomepageActivity.class);
+        Intent myIntent = new Intent(LoginActivity.this, CourseDiscovery.class);
         // myIntent.putExtra("key", value); // should send user details
         LoginActivity.this.startActivity(myIntent);
         finish();
     }
 
-    public void onLoginFailed() {
-        Toast.makeText(getBaseContext(), "Login failed", Toast.LENGTH_LONG).show();
+    public void onLoginFailed(String msg) {
+        Toast.makeText(getBaseContext(), msg, Toast.LENGTH_LONG).show();
 
         loginButton.setEnabled(true);
     }
@@ -174,7 +176,7 @@ public class LoginActivity extends AppCompatActivity {
     private void signIn(String email, String password) {
         Log.d(TAG, "signIn:" + email);
         if (!validate(email, password)) {
-            onLoginFailed();
+            onLoginFailed("Login failed");
             return;
         }
 
@@ -199,8 +201,28 @@ public class LoginActivity extends AppCompatActivity {
                             progressDialog.dismiss();
                         } else {
                             // If sign in fails, display a message to the user.
-                            Log.w(TAG, "signInWithEmail:failure", task.getException());
-                            onLoginFailed();
+                            String message = "Authentication failed";
+                            try
+                            {
+                                throw task.getException();
+                            }
+                            // if user enters wrong email.
+                            catch (FirebaseAuthInvalidUserException invalidEmail)
+                            {
+                                message = "Invalid email or password";
+                            }
+                            // if user enters wrong password.
+                            catch (FirebaseAuthInvalidCredentialsException wrongPassword)
+                            {
+                                message = "Invalid email or password";
+                            }
+                            catch (Exception e)
+                            {
+                                ;
+                            }
+
+                            Log.w(TAG, message, task.getException());
+                            onLoginFailed(message);
                             progressDialog.dismiss();
                         }
 

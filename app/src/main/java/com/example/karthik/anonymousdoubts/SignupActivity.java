@@ -19,6 +19,9 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
+import com.google.firebase.auth.FirebaseAuthUserCollisionException;
+import com.google.firebase.auth.FirebaseAuthWeakPasswordException;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -195,9 +198,32 @@ public class SignupActivity extends AppCompatActivity implements AdapterView.OnI
 
                             onSignupSuccess();
                         } else {
+                            String message = "Registration failed";
                             // If sign in fails, display a message to the user.
-                            Log.w(TAG, "createUserWithEmail:failure", task.getException());
-                            Toast.makeText(SignupActivity.this, "Authentication failed.",
+                            try
+                            {
+                                throw task.getException();
+                            }
+                            catch (FirebaseAuthWeakPasswordException weakPassword)
+                            {
+                                message = "Weak Password";
+                            }
+                            catch (FirebaseAuthInvalidCredentialsException malformedEmail)
+                            {
+                                message = "Malformed Email";
+                            }
+                            catch (FirebaseAuthUserCollisionException existEmail)
+                            {
+                                message = "Email already exists";
+                            }
+                            catch (Exception e)
+                            {
+                                ;
+                            }
+
+
+                            Log.w(TAG, message, task.getException());
+                            Toast.makeText(SignupActivity.this, message,
                                     Toast.LENGTH_SHORT).show();
                             onSignupFailed();
                         }
