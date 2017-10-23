@@ -140,18 +140,8 @@ public class SignupActivity extends AppCompatActivity implements AdapterView.OnI
         String institution = email.split("@")[1];
         institution = institution.replace(".","");
 
-
-        if(isTeacher){
-            Teacher teacher = new Teacher(email, name);
-            mFirebaseDatabaseReference.child(institution).child("users").child("teachers").child(uId).setValue(teacher);
-
-        }
-        else if(isStudent){
-            Student student = new Student(email, name);
-            mFirebaseDatabaseReference.child(institution).child("users").child("students").child(uId).setValue(student);
-
-        }
-
+        User user = new User(email, name, isStudent, isTeacher, null);
+        mFirebaseDatabaseReference.child(institution).child("users").child(uId).setValue(user);
 
     }
 
