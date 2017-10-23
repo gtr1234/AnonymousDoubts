@@ -1,5 +1,6 @@
 package com.example.karthik.anonymousdoubts;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -38,9 +39,17 @@ public class CourseDiscovery extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private DatabaseReference mDatabase;
     private DatabaseReference userIdEndPoint;
-    private User currentUserObj;
+    private DatabaseReference courseMetaDataListEndPoint;
+
+    String email;
+    boolean isTeacher;
+    boolean isStudent;
+
     String userId;
     FloatingActionButton fab;
+    String userName;
+
+    int initialState = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,7 +62,7 @@ public class CourseDiscovery extends AppCompatActivity {
         fab.hide();
 
         mAuth = FirebaseAuth.getInstance();
-        FirebaseUser firebaseUser = mAuth.getCurrentUser();
+        final FirebaseUser firebaseUser = mAuth.getCurrentUser();
         userId = firebaseUser.getUid();
 
         String institution = firebaseUser.getEmail().split("@")[1];
@@ -61,6 +70,25 @@ public class CourseDiscovery extends AppCompatActivity {
 
         mDatabase =  FirebaseDatabase.getInstance().getReference();
         userIdEndPoint = mDatabase.child("institution").child(institution).child("users").child(userId);
+        courseMetaDataListEndPoint = userIdEndPoint.child("courseMetaDataArrayList");
+
+        userIdEndPoint.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                email = dataSnapshot.child("email").getValue(String.class);
+                isStudent = (boolean) dataSnapshot.child("isStudent").getValue();
+                isTeacher = (boolean) dataSnapshot.child("isTeacher").getValue();
+                userName = dataSnapshot.child("name").getValue(String.class);
+
+                if(isTeacher) fab.show();
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.d(TAG, databaseError.getMessage());
+            }
+        });
+
+
 
         recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
 
@@ -81,6 +109,7 @@ public class CourseDiscovery extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(getApplicationContext(), CreateCourseActivity.class);
+                intent.putExtra("teacherName", userName);
                 startActivityForResult(intent, CREATE_COURSE);
             }
         });
@@ -88,42 +117,46 @@ public class CourseDiscovery extends AppCompatActivity {
     }
 
     private void addCourseMetaData() {
-        CourseMetaData courseMetaData = new CourseMetaData(COURSENAME+"Software Engineering",
-                COURSETEACHER+"Dr.Balwinder Sodhi",COURSECODE+"CSL456");
-        courseMetaDataList.add(courseMetaData);
 
-        courseMetaData = new CourseMetaData(COURSENAME+"BTP",COURSETEACHER+"Dr.Sowmitra",COURSECODE+"CSL555");
-        courseMetaDataList.add(courseMetaData);
+        final ProgressDialog progressDialog = new ProgressDialog(CourseDiscovery.this,
+                R.style.AppTheme_Dark_Dialog);;
+        if(initialState == 1){
+            Log.e(TAG, "progress dialog");
+            progressDialog.setIndeterminate(true);
+            progressDialog.setMessage("Fetching Courses...");
+            progressDialog.show();
+            initialState = -1;
+        }
 
-        final List<User> userArrayList = new ArrayList<>();
 
-        userIdEndPoint.addValueEventListener(new ValueEventListener() {
+        courseMetaDataListEndPoint.addValueEventListener(new ValueEventListener() {
+
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                User user = dataSnapshot.getValue(User.class);
-                userArrayList.add(user);
-                currentUserObj = user;
-                if(user.isTeacher) fab.show();
-            }
+                int state = 0;
+                for (DataSnapshot noteSnapshot: dataSnapshot.getChildren()){
+                    CourseMetaData courseMetaData1 = noteSnapshot.getValue(CourseMetaData.class);
+                    if(!courseMetaDataList.contains(courseMetaData1)) {
+                        state = 1;
+                        courseMetaDataList.add(courseMetaData1);
+                    }
+                }
 
+                if(state == 1){
+                    mAdapter.notifyDataSetChanged();
+                }
+                if(initialState == -1){
+                    progressDialog.dismiss();
+                    initialState = 0;
+                }
+
+            }
             @Override
             public void onCancelled(DatabaseError databaseError) {
                 Log.d(TAG, databaseError.getMessage());
             }
         });
 
-        if(userArrayList.size() > 0) {
-            User user = userArrayList.get(0);
-            ArrayList<CourseMetaData> courseList = user.courseMetaDataArrayList;
-            if(courseList != null) {
-                for (CourseMetaData course : courseList) {
-                    courseMetaDataList.add(course);
-                }
-            }
-        }
-
-
-        mAdapter.notifyDataSetChanged();
 
     }
 
