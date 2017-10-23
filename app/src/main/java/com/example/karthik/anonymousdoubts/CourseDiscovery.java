@@ -1,5 +1,6 @@
 package com.example.karthik.anonymousdoubts;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -24,6 +25,7 @@ import java.util.List;
 
 public class CourseDiscovery extends AppCompatActivity {
 
+    private static final int CREATE_COURSE = 0;
     private static final String TAG = "CourseDiscovery";
     private List<CourseMetaData> courseMetaDataList = new ArrayList<>();
     private RecyclerView recyclerView;
@@ -73,14 +75,15 @@ public class CourseDiscovery extends AppCompatActivity {
         addCourseMetaData();
 
 
-        if(currentUserObj != null && currentUserObj.isTeacher) {
-            fab.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    ;
-                }
-            });
-        }
+        //if(currentUserObj != null && currentUserObj.isTeacher) {}
+
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getApplicationContext(), CreateCourseActivity.class);
+                startActivityForResult(intent, CREATE_COURSE);
+            }
+        });
 
     }
 
@@ -123,5 +126,32 @@ public class CourseDiscovery extends AppCompatActivity {
         mAdapter.notifyDataSetChanged();
 
     }
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Log.e(TAG,"req "+requestCode+" res "+resultCode);
+        if (requestCode == CREATE_COURSE) {
+            if (resultCode == RESULT_OK) {
+                Log.e(TAG,"all okay-- course created");
+
+                /*
+                Intent myIntent = new Intent(LoginActivity.this, CourseDiscovery.class);
+                // myIntent.putExtra("key", value); // should send user details
+                LoginActivity.this.startActivity(myIntent);
+
+                this.finish();
+                */
+
+            }
+            else{
+                Log.e(TAG,"no ok");
+            }
+        }
+        else{
+            Log.e(TAG,"no signup");
+        }
+    }
+
 
 }

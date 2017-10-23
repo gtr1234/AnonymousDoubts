@@ -35,7 +35,8 @@
         <activity
             android:name=".CourseDiscovery"
             android:label="@string/title_activity_course_discovery"
-            android:theme="@style/AppTheme.Dark"></activity>
+            android:theme="@style/AppTheme.Dark" />
+        <activity android:name=".CreateCourseActivity"></activity>
     </application>
 
 </manifest>
