@@ -1,4 +1,4 @@
-package com.example.karthik.anonymousdoubts;
+package com.example.karthik.anonymousdoubts.CourseHomePage;
 
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -8,6 +8,11 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+
+import com.example.karthik.anonymousdoubts.CourseHomePage.Course_AboutMeFragment;
+import com.example.karthik.anonymousdoubts.CourseHomePage.Course_LectureFragment;
+import com.example.karthik.anonymousdoubts.CourseHomePage.Course_StudentsFragment;
+import com.example.karthik.anonymousdoubts.R;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,4 +1,4 @@
-package com.example.karthik.anonymousdoubts;
+package com.example.karthik.anonymousdoubts.CourseCreationAndDiscovery.UIDecorator;
 
 import android.content.Context;
 import android.content.res.TypedArray;

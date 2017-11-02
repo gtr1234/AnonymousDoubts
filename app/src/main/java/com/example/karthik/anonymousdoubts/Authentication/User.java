@@ -1,7 +1,8 @@
-package com.example.karthik.anonymousdoubts;
+package com.example.karthik.anonymousdoubts.Authentication;
+
+import com.example.karthik.anonymousdoubts.CourseCreationAndDiscovery.CourseMetaData;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by Karthik on 22-Oct-17.

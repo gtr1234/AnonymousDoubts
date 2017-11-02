@@ -24,19 +24,19 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".LoginActivity"
+            android:name=".Authentication.LoginActivity"
             android:theme="@style/AppTheme.Dark" />
         <activity
-            android:name=".SignupActivity"
+            android:name=".Authentication.SignupActivity"
             android:theme="@style/AppTheme.Dark" />
         <activity
-            android:name=".CourseHomepageActivity"
+            android:name=".CourseHomePage.CourseHomepageActivity"
             android:theme="@style/AppTheme.Dark" />
         <activity
-            android:name=".CourseDiscovery"
+            android:name=".CourseCreationAndDiscovery.CourseDiscovery"
             android:label="@string/title_activity_course_discovery"
             android:theme="@style/AppTheme.Dark" />
-        <activity android:name=".CreateCourseActivity"></activity>
+        <activity android:name=".CourseCreationAndDiscovery.CreateCourseActivity"></activity>
     </application>
 
 </manifest>

@@ -1,10 +1,9 @@
-package com.example.karthik.anonymousdoubts;
+package com.example.karthik.anonymousdoubts.CourseCreationAndDiscovery;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
@@ -13,6 +12,8 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 
+import com.example.karthik.anonymousdoubts.CourseCreationAndDiscovery.UIDecorator.DividerItemDecoration;
+import com.example.karthik.anonymousdoubts.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -136,9 +137,12 @@ public class CourseDiscovery extends AppCompatActivity {
                 int state = 0;
                 for (DataSnapshot noteSnapshot: dataSnapshot.getChildren()){
                     CourseMetaData courseMetaData1 = noteSnapshot.getValue(CourseMetaData.class);
-                    if(!courseMetaDataList.contains(courseMetaData1)) {
+                    CourseMetaData courseMetaData2 = new CourseMetaData("Course name : " + courseMetaData1.getCourseName(),
+                            "Course Teacher : "+courseMetaData1.getCourseTeacher(), "Course code : "+courseMetaData1.getCourseCode());
+                    courseMetaData2.courseUId = courseMetaData1.courseUId;
+                    if(!courseMetaDataList.contains(courseMetaData2)) {
                         state = 1;
-                        courseMetaDataList.add(courseMetaData1);
+                        courseMetaDataList.add(courseMetaData2);
                     }
                 }
 

@@ -1,4 +1,4 @@
-package com.example.karthik.anonymousdoubts;
+package com.example.karthik.anonymousdoubts.CourseCreationAndDiscovery;
 
 /**
  * Created by Karthik on 21-Oct-17.

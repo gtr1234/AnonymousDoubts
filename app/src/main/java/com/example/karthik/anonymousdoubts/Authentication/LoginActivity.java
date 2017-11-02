@@ -1,4 +1,4 @@
-package com.example.karthik.anonymousdoubts;
+package com.example.karthik.anonymousdoubts.Authentication;
 
 import android.app.ProgressDialog;
 import android.os.Bundle;
@@ -13,6 +13,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.karthik.anonymousdoubts.CourseCreationAndDiscovery.CourseDiscovery;
+import com.example.karthik.anonymousdoubts.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
