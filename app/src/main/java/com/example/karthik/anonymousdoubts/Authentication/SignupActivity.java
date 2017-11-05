@@ -75,7 +75,7 @@ public class SignupActivity extends AppCompatActivity implements AdapterView.OnI
                 String password = _passwordText.getText().toString();
                 String reEnterPassword = _reEnterPasswordText.getText().toString();
 
-                createAccount(email, password, name);
+                createAccount(email, password, reEnterPassword, name);
             }
         });
 
@@ -163,9 +163,10 @@ public class SignupActivity extends AppCompatActivity implements AdapterView.OnI
         _signupButton.setEnabled(true);
     }
 
-    private void createAccount(final String email, final String password, final String name) {
+    private void createAccount(final String email, final String password,final String reEnterPassword,
+                               final String name) {
         Log.d(TAG, "createAccount:" + email);
-        if (!validate()) {
+        if (!validate(name, email, password, reEnterPassword)) {
             return;
         }
 
@@ -229,13 +230,8 @@ public class SignupActivity extends AppCompatActivity implements AdapterView.OnI
         // [END create_user_with_email]
     }
 
-    public boolean validate() {
+    public boolean validate(String name, String email, String password, String reEnterPassword) {
         boolean valid = true;
-
-        String name = _nameText.getText().toString();
-        String email = _emailText.getText().toString();
-        String password = _passwordText.getText().toString();
-        String reEnterPassword = _reEnterPasswordText.getText().toString();
 
         if (name.isEmpty() || name.length() < 3) {
             _nameText.setError("at least 3 characters");
