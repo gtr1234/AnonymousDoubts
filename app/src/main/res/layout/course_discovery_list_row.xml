@@ -12,7 +12,7 @@
         android:padding="5dp"
         android:text="Course Name"
         android:textColor="@android:color/black"
-        android:textSize="15sp" />
+        android:textSize="20sp" />
 
     <TextView
         android:id="@+id/courseTeacher"
@@ -24,7 +24,7 @@
         android:padding="5dp"
         android:text="Course Teacher"
         android:textColor="@android:color/black"
-        android:textSize="15sp" />
+        android:textSize="12sp" />
 
     <TextView
         android:id="@+id/courseCode"
@@ -36,7 +36,7 @@
         android:padding="5dp"
         android:text="Course Code"
         android:textColor="@android:color/black"
-        android:textSize="15sp" />
+        android:textSize="12sp" />
 
     <ImageView
         android:id="@+id/imageView3"

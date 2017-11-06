@@ -44,7 +44,8 @@ public class CourseDiscovery extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private DatabaseReference mDatabase;
     private DatabaseReference userIdEndPoint;
-    private DatabaseReference courseMetaDataListEndPoint;
+    private DatabaseReference courseUIdsEndPoint;
+    private DatabaseReference courseMetaDataEndPoint;
 
     String email;
     boolean isTeacher;
@@ -77,7 +78,8 @@ public class CourseDiscovery extends AppCompatActivity {
 
         mDatabase =  FirebaseDatabase.getInstance().getReference();
         userIdEndPoint = mDatabase.child("institution").child(institution).child("users").child(userId);
-        courseMetaDataListEndPoint = userIdEndPoint.child("courseMetaDataArrayList");
+        courseUIdsEndPoint = userIdEndPoint.child("courseUIds");
+        courseMetaDataEndPoint = mDatabase.child("institution").child(institution);
 
         userIdEndPoint.addValueEventListener(new ValueEventListener() {
             @Override
@@ -167,31 +169,60 @@ public class CourseDiscovery extends AppCompatActivity {
         }
 
 
-        courseMetaDataListEndPoint.addValueEventListener(new ValueEventListener() {
-
+        courseUIdsEndPoint.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                int state = 0;
                 for (DataSnapshot noteSnapshot: dataSnapshot.getChildren()){
-                    CourseMetaData courseMetaData1 = noteSnapshot.getValue(CourseMetaData.class);
-                    CourseMetaData courseMetaData2 = new CourseMetaData("Course name : " + courseMetaData1.getCourseName(),
-                            "Course Teacher : "+courseMetaData1.getCourseTeacher(), "Course code : "+courseMetaData1.getCourseCode());
-                    courseMetaData2.courseUId = courseMetaData1.courseUId;
-                    if(!courseMetaDataList.contains(courseMetaData2)) {
-                        state = 1;
-                        courseMetaDataList.add(courseMetaData2);
+                    String courseUid = noteSnapshot.getValue(String.class);
+
+                    if(!containsCourseId(courseUid)){
+
+                        DatabaseReference courseMetaDataEndPointNew = courseMetaDataEndPoint.child("allCoursesMetaData").child(courseUid);
+
+                        courseMetaDataEndPointNew.addValueEventListener(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                int state = 0;
+
+                                ArrayList<String> courseMetaDataValues = new ArrayList<>();
+
+                                for (DataSnapshot noteSnapshot: dataSnapshot.getChildren()) {
+                                    courseMetaDataValues.add(noteSnapshot.getValue(String.class));
+                                }
+                                
+                                if(courseMetaDataValues.size() == 5) {
+                                    CourseMetaData courseMetaData2 = new CourseMetaData(courseMetaDataValues.get(0),
+                                            courseMetaDataValues.get(1), courseMetaDataValues.get(2));
+                                    courseMetaData2.courseUId = courseMetaDataValues.get(3);
+                                    courseMetaData2.passcode = courseMetaDataValues.get(4);
+
+                                    if (!courseMetaDataList.contains(courseMetaData2)) {
+                                        state = 1;
+                                        courseMetaDataList.add(courseMetaData2);
+                                    }
+                                }
+
+
+                                if(state == 1){
+                                    mAdapter.notifyDataSetChanged();
+                                }
+                                if(initialState == -1){
+                                    progressDialog.dismiss();
+                                    initialState = 0;
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
+
+                            }
+                        });
+
                     }
-                }
 
-                if(state == 1){
-                    mAdapter.notifyDataSetChanged();
                 }
-                if(initialState == -1){
-                    progressDialog.dismiss();
-                    initialState = 0;
-                }
-
             }
+
             @Override
             public void onCancelled(DatabaseError databaseError) {
                 Log.d(TAG, databaseError.getMessage());
@@ -233,5 +264,16 @@ public class CourseDiscovery extends AppCompatActivity {
         startActivity(logout);
     }
 
+
+    private boolean containsCourseId(String courseUId){
+
+        for (CourseMetaData courseMetaData: courseMetaDataList){
+            if(courseMetaData.courseUId.equals(courseUId)){
+                return true;
+            }
+        }
+
+        return false;
+    }
 
 }

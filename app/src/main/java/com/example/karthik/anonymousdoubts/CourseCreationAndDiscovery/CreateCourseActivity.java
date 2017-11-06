@@ -20,7 +20,12 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import org.joda.time.DateTime;
+import org.joda.time.Days;
+import org.joda.time.Weeks;
+
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Locale;
 
@@ -28,7 +33,7 @@ public class CreateCourseActivity extends AppCompatActivity {
 
     private static final String TAG = "CreateCourseActivity";
     private Toolbar toolbar;
-    private EditText _courseName,_courseCode,_courseDescription, _startDate, _endDate;
+    private EditText _courseName,_courseCode,_courseDescription,_coursePasscode, _startDate, _endDate;
     private CheckBox _mon,_tue,_wed,_thu,_fri,_sat,_sun;
     private Button createCourseBtn;
 
@@ -38,8 +43,12 @@ public class CreateCourseActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private DatabaseReference mDatabase;
     private DatabaseReference userIdEndPoint;
-    private DatabaseReference courseEndPoint;
+    private DatabaseReference allCoursesMetaDataEndPoint;
+    private DatabaseReference allCoursesDataEndPoint;
+    private DatabaseReference institutionEndPoint;
     String userId;
+
+    int calendarSetState = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,13 +66,16 @@ public class CreateCourseActivity extends AppCompatActivity {
 
         mDatabase =  FirebaseDatabase.getInstance().getReference();
         userIdEndPoint = mDatabase.child("institution").child(institution).child("users").child(userId);
-        courseEndPoint = mDatabase.child("institution").child(institution).child("courses");
+        allCoursesMetaDataEndPoint = mDatabase.child("institution").child(institution).child("allCoursesMetaData");
+        allCoursesDataEndPoint = mDatabase.child("institution").child(institution).child("allCoursesData");
+        institutionEndPoint = mDatabase.child("institution").child(institution);
 
         final String teacherName = getIntent().getStringExtra("teacherName");
 
         _courseName = (EditText) findViewById(R.id.input_course_name);
         _courseCode = (EditText) findViewById(R.id.input_course_code);
         _courseDescription = (EditText) findViewById(R.id.input_about_course);
+        _coursePasscode = (EditText) findViewById(R.id.input_course_passcode);
         createCourseBtn = (Button) findViewById(R.id.btn_create_course);
         _startDate = (EditText) findViewById(R.id.inCourseStartDate);
         _endDate = (EditText) findViewById(R.id.inCourseEndDate);
@@ -85,6 +97,7 @@ public class CreateCourseActivity extends AppCompatActivity {
                 startDateCalendar.set(Calendar.MONTH, month);
                 startDateCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
                 updateLabel(1);
+                calendarSetState++;
             }
         };
 
@@ -95,6 +108,7 @@ public class CreateCourseActivity extends AppCompatActivity {
                 endDateCalendar.set(Calendar.MONTH, month);
                 endDateCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
                 updateLabel(2);
+                calendarSetState++;
             }
         };
 
@@ -124,8 +138,9 @@ public class CreateCourseActivity extends AppCompatActivity {
                 String courseName = _courseName.getText().toString();
                 String courseCode = _courseCode.getText().toString();
                 String courseDescription = _courseDescription.getText().toString();
+                String coursePasscode = _coursePasscode.getText().toString();
 
-                if(validate(courseName, courseCode, courseDescription)) {
+                if(validate(courseName, courseCode, courseDescription, coursePasscode)) {
 
                     final ProgressDialog progressDialog = new ProgressDialog(CreateCourseActivity.this,
                             R.style.AppTheme_Dark_Dialog);
@@ -134,13 +149,46 @@ public class CreateCourseActivity extends AppCompatActivity {
                     progressDialog.show();
 
                     CourseMetaData courseMetaData = new CourseMetaData(courseName, teacherName, courseCode);
-                    String uId = userIdEndPoint.child("courseMetaDataArrayList").push().getKey();
-                    courseMetaData.courseUId = uId;
 
-                    userIdEndPoint.child("courseMetaDataArrayList").child(uId).setValue(courseMetaData);
+                    String courseuId = allCoursesMetaDataEndPoint.push().getKey();
 
-                    CourseData courseData = new CourseData(courseDescription, null, null);
-                    courseEndPoint.child(uId).setValue(courseData);
+                    courseMetaData.courseUId = courseuId;
+                    courseMetaData.passcode = coursePasscode;
+
+                    DateTime s = new DateTime(startDateCalendar.get(Calendar.YEAR), startDateCalendar.get(Calendar.MONTH),
+                            startDateCalendar.get(Calendar.DAY_OF_MONTH),0, 0,0,
+                            0);
+                    DateTime e = new DateTime(endDateCalendar.get(Calendar.YEAR), endDateCalendar.get(Calendar.MONTH),
+                            endDateCalendar.get(Calendar.DAY_OF_MONTH),0, 0,0,
+                            0);
+
+                    int weeksInBetween = Weeks.weeksBetween(s.dayOfWeek().withMinimumValue().minusDays(1),
+                            e.dayOfWeek().withMaximumValue().plusDays(1)).getWeeks();
+
+
+                    allCoursesMetaDataEndPoint.child(courseuId).setValue(courseMetaData);
+                    userIdEndPoint.child("courseUIds").child(courseuId).setValue(courseuId);
+                    allCoursesDataEndPoint.child(courseuId).child("courseDescription").setValue(courseDescription);
+
+
+                    Log.i(TAG,"weeks = "+weeksInBetween);
+                    for (int i = 0; i < weeksInBetween; i++) {
+                        String weekId = institutionEndPoint.child("weeks").push().getKey();
+
+                        String tempUid = allCoursesDataEndPoint.child(courseuId).child("weekIds").push().getKey();
+                        allCoursesDataEndPoint.child(courseuId).child("weekIds").child(tempUid).setValue(weekId);
+
+                        ArrayList<String> daysSelected = getSelectedDays();
+
+                        for (int j = 0; j < daysSelected.size(); j++) {
+                            String lectureId = institutionEndPoint.child("lecturesData").push().getKey();
+                            institutionEndPoint.child("weeksData").child(weekId).child("lectureIds").push().setValue(lectureId);
+
+                            institutionEndPoint.child("lecturesData").child(lectureId).child("day").setValue(daysSelected.get(j));
+                        }
+
+                    }
+
 
                     progressDialog.dismiss();
 
@@ -153,7 +201,7 @@ public class CreateCourseActivity extends AppCompatActivity {
 
     }
 
-    public boolean validate(String courseName,String courseCode,String courseDescription) {
+    public boolean validate(String courseName,String courseCode,String courseDescription, String coursePasscode) {
         boolean valid = true;
 
         if (courseName.isEmpty()) {
@@ -179,7 +227,19 @@ public class CreateCourseActivity extends AppCompatActivity {
             _courseDescription.setError(null);
         }
 
-        if(startDateCalendar.after(endDateCalendar)){
+        if(calendarSetState < 2) {
+            new AlertDialog.Builder(CreateCourseActivity.this)
+                    .setTitle("Error")
+                    .setMessage("Please Select Valid Start Date and End Date.")
+                    .setNeutralButton("Back", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog,
+                                            int which) {
+                            // do nothing - it will just close when clicked
+                        }
+                    }).show();
+            valid = false;
+        }
+        else if(startDateCalendar.after(endDateCalendar)){
             new AlertDialog.Builder(CreateCourseActivity.this)
                     .setTitle("Error")
                     .setMessage("Please Enter Valid End Date.")
@@ -192,6 +252,26 @@ public class CreateCourseActivity extends AppCompatActivity {
             valid = false;
         }
 
+        if (coursePasscode.isEmpty()) {
+            _coursePasscode.setError("Course passcode can't be empty");
+            valid = false;
+        } else {
+            _coursePasscode.setError(null);
+        }
+
+        if (!_mon.isChecked() && !_tue.isChecked() && !_wed.isChecked() && !_thu.isChecked() &&
+                !_fri.isChecked() && !_sat.isChecked() && !_sun.isChecked()) {
+                    new AlertDialog.Builder(CreateCourseActivity.this)
+                        .setTitle("Error")
+                        .setMessage("Please select at-least one day in the week")
+                        .setNeutralButton("Back", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog,
+                                                int which) {
+                                // do nothing - it will just close when clicked
+                            }
+                        }).show();
+                    valid = false;
+                }
 
         return valid;
     }
@@ -231,6 +311,28 @@ public class CreateCourseActivity extends AppCompatActivity {
             _startDate.setText(sdf.format(startDateCalendar.getTime()));
         else if(state == 2)
             _endDate.setText(sdf.format(endDateCalendar.getTime()));
+
+    }
+
+    private ArrayList<String> getSelectedDays(){
+        ArrayList<String> daysSelected = new ArrayList<>();
+
+        if(_mon.isChecked())
+            daysSelected.add("Monday");
+        if(_tue.isChecked())
+            daysSelected.add("Tuesday");
+        if(_wed.isChecked())
+            daysSelected.add("Wednesday");
+        if(_thu.isChecked())
+            daysSelected.add("Thursday");
+        if(_fri.isChecked())
+            daysSelected.add("Friday");
+        if(_sat.isChecked())
+            daysSelected.add("Saturday");
+        if(_sun.isChecked())
+            daysSelected.add("Sunday");
+
+        return daysSelected;
     }
 
 }

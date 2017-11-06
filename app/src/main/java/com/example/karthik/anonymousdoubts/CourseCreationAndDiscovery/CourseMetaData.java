@@ -9,6 +9,7 @@ public class CourseMetaData {
     private String courseTeacher;
     private String courseCode;
 
+    public String passcode;
     public String courseUId;
 
     public CourseMetaData() {
@@ -45,24 +46,4 @@ public class CourseMetaData {
     }
 
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        CourseMetaData that = (CourseMetaData) o;
-
-        if (!courseName.equals(that.courseName)) return false;
-        if (!courseTeacher.equals(that.courseTeacher)) return false;
-        return courseCode.equals(that.courseCode);
-
-    }
-
-    @Override
-    public int hashCode() {
-        int result = courseName.hashCode();
-        result = 31 * result + courseTeacher.hashCode();
-        result = 31 * result + courseCode.hashCode();
-        return result;
-    }
 }
