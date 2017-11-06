@@ -3,15 +3,19 @@ package com.example.karthik.anonymousdoubts.CourseCreationAndDiscovery;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.NavigationView;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 
+import com.example.karthik.anonymousdoubts.Authentication.LoginActivity;
 import com.example.karthik.anonymousdoubts.CourseCreationAndDiscovery.UIDecorator.DividerItemDecoration;
 import com.example.karthik.anonymousdoubts.R;
 import com.google.firebase.auth.FirebaseAuth;
@@ -49,6 +53,8 @@ public class CourseDiscovery extends AppCompatActivity {
     String userId;
     FloatingActionButton fab;
     String userName;
+
+    NavigationView navigationView;
 
     int initialState = 1;
 
@@ -103,6 +109,37 @@ public class CourseDiscovery extends AppCompatActivity {
 
         addCourseMetaData();
 
+        //EDITED HERE
+        navigationView = (NavigationView) findViewById(R.id.Navigation_view);
+        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+
+                int id = item.getItemId();
+
+                switch (id){
+
+                    case R.id.db:
+                        break;
+                    case R.id.activity:
+                        break;
+                    case R.id.settings:
+                        break;
+                    case R.id.singout:
+                        signOut();
+                        break;
+                }
+
+                return true;
+            }
+        });
+
+
+
+
+
+
+
 
         //if(currentUserObj != null && currentUserObj.isTeacher) {}
 
@@ -120,7 +157,7 @@ public class CourseDiscovery extends AppCompatActivity {
     private void addCourseMetaData() {
 
         final ProgressDialog progressDialog = new ProgressDialog(CourseDiscovery.this,
-                R.style.AppTheme_Dark_Dialog);;
+                R.style.AppTheme_Dark_Dialog);
         if(initialState == 1){
             Log.e(TAG, "progress dialog");
             progressDialog.setIndeterminate(true);
@@ -188,6 +225,12 @@ public class CourseDiscovery extends AppCompatActivity {
         else{
             Log.e(TAG,"no signup");
         }
+    }
+
+    private void signOut(){
+        mAuth.signOut();
+        Intent logout = new Intent(this, LoginActivity.class);
+        startActivity(logout);
     }
 
 

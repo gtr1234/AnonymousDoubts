@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<menu
+
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/db"
+        android:icon="@drawable/ic_dashboard_black_24dp"
+        android:title="@string/Dashboard"
+        />
+    <item
+        android:id="@+id/settings"
+        android:title="@string/settings"
+        android:icon="@drawable/ic_settings_black_24dp"
+        />
+    <item
+        android:id="@+id/activity"
+        android:title="@string/activities"
+        android:icon="@drawable/ic_local_activity_black_24dp"
+        />
+    <item
+        android:icon="@drawable/ic_logout_black_24dp"
+        android:title="@string/logout"
+        android:id="@+id/singout"
+        />
+
+</menu>
