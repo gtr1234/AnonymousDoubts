@@ -14,8 +14,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme.Dark">
+        <!--changed here -->
         <activity
-            android:name=".MainActivity"
+            android:name=".CourseHomePage.CourseHomepageActivity"
             android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -29,8 +30,9 @@
         <activity
             android:name=".Authentication.SignupActivity"
             android:theme="@style/AppTheme.Dark" />
+        <!--changed here -->
         <activity
-            android:name=".CourseHomePage.CourseHomepageActivity"
+            android:name=".MainActivity"
             android:theme="@style/AppTheme.Dark" />
         <activity
             android:name=".CourseCreationAndDiscovery.CourseDiscovery"

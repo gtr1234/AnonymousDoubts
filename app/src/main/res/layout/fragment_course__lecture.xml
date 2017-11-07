@@ -4,6 +4,11 @@
     android:layout_height="match_parent"
     tools:context="com.example.karthik.anonymousdoubts.CourseHomePage.Course_LectureFragment">
 
+    <ExpandableListView
+        android:id="@+id/expandable_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
+    </ExpandableListView>
 
 </FrameLayout>
