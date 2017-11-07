@@ -51,7 +51,7 @@ public class Course_LectureFragment extends Fragment {
         listDataHeader.add("Week 1");
         listDataHeader.add("Week 2");
         listDataHeader.add("Week 3");
-        listDataHeader.add("Weel 4");
+        listDataHeader.add("Week 4");
 
 
         List<String> week1 = new ArrayList<>();
