@@ -27,6 +27,9 @@ public class CourseMetaDataView extends AbstractItem<CourseMetaDataView, CourseM
     public StringHolder courseTeacher;
     public StringHolder courseCode;
 
+    public String passcode;
+    public String courseUId;
+
     private boolean mIsDraggable = true;
 
     public CourseMetaDataView withHeader(String header) {
@@ -49,6 +52,17 @@ public class CourseMetaDataView extends AbstractItem<CourseMetaDataView, CourseM
         this.courseCode = new StringHolder(CourseCode);
         return this;
     }
+
+    public CourseMetaDataView withPasscode(String Passcode) {
+        this.passcode = Passcode;
+        return this;
+    }
+
+    public CourseMetaDataView withCourseUId(String CourseUId) {
+        this.courseUId = CourseUId;
+        return this;
+    }
+
 
     //The unique ID for this type of item
     @Override
