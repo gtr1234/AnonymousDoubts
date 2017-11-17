@@ -35,6 +35,18 @@ dependencies {
     compile 'com.android.support:recyclerview-v7:25.3.1'
     compile 'joda-time:joda-time:2.9.9'
     testCompile 'junit:junit:4.12'
+
+    compile 'com.jakewharton:butterknife:8.8.1'
+    annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
+
+    compile('com.mikepenz:fastadapter:3.0.0@aar') {
+        transitive = true
+    }
+    compile 'com.mikepenz:fastadapter-extensions:3.0.0@aar'
+
+    compile 'com.timehop.stickyheadersrecyclerview:library:0.4.3@aar'
+
+    implementation "com.mikepenz:materialize:1.1.2@aar"
 }
 
 apply plugin: 'com.google.gms.google-services'

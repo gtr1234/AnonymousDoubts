@@ -27,6 +27,7 @@ import org.joda.time.Weeks;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.Locale;
 
 public class CreateCourseActivity extends AppCompatActivity {
@@ -47,6 +48,8 @@ public class CreateCourseActivity extends AppCompatActivity {
     private DatabaseReference allCoursesDataEndPoint;
     private DatabaseReference institutionEndPoint;
     String userId;
+
+    private HashMap<String, Integer> daysToNum;
 
     int calendarSetState = 0;
 
@@ -155,16 +158,21 @@ public class CreateCourseActivity extends AppCompatActivity {
                     courseMetaData.courseUId = courseuId;
                     courseMetaData.passcode = coursePasscode;
 
-                    DateTime s = new DateTime(startDateCalendar.get(Calendar.YEAR), startDateCalendar.get(Calendar.MONTH),
+
+                    DateTime s = new DateTime(startDateCalendar.get(Calendar.YEAR), startDateCalendar.get(Calendar.MONTH)+1,
                             startDateCalendar.get(Calendar.DAY_OF_MONTH),0, 0,0,
                             0);
-                    DateTime e = new DateTime(endDateCalendar.get(Calendar.YEAR), endDateCalendar.get(Calendar.MONTH),
+                    DateTime e = new DateTime(endDateCalendar.get(Calendar.YEAR), endDateCalendar.get(Calendar.MONTH)+1,
                             endDateCalendar.get(Calendar.DAY_OF_MONTH),0, 0,0,
                             0);
 
-                    int weeksInBetween = Weeks.weeksBetween(s.dayOfWeek().withMinimumValue().minusDays(1),
-                            e.dayOfWeek().withMaximumValue().plusDays(1)).getWeeks();
 
+                    DateTime modStartDate = s.dayOfWeek().withMinimumValue();
+                    DateTime modEndDate = e.dayOfWeek().withMaximumValue();
+
+                    int weeksInBetween = Weeks.weeksBetween(modStartDate,modEndDate).getWeeks()+1;
+
+                    Log.i(TAG,"modified Start "+modStartDate.toString()+" modified End date "+modEndDate.toString());
 
                     allCoursesMetaDataEndPoint.child(courseuId).setValue(courseMetaData);
                     userIdEndPoint.child("courseUIds").child(courseuId).setValue(courseuId);
@@ -180,11 +188,24 @@ public class CreateCourseActivity extends AppCompatActivity {
 
                         ArrayList<String> daysSelected = getSelectedDays();
 
+                        String myFormat = "dd/MM/yy";
+                        SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.getDefault());
+
+                        DateTime weekStartDateTime = modStartDate.plusDays(i*7);
+                        String weekStartDate = sdf.format(weekStartDateTime.toDate());
+                        String weekEndDate = sdf.format(weekStartDateTime.plusDays(6).toDate());
+
                         for (int j = 0; j < daysSelected.size(); j++) {
+
+                            String lectureDate = sdf.format(weekStartDateTime.plusDays(daysToNum.get(daysSelected.get(j))).toDate());
+
                             String lectureId = institutionEndPoint.child("lecturesData").push().getKey();
                             institutionEndPoint.child("weeksData").child(weekId).child("lectureIds").push().setValue(lectureId);
+                            institutionEndPoint.child("weeksData").child(weekId).child("StartDate").setValue(weekStartDate);
+                            institutionEndPoint.child("weeksData").child(weekId).child("EndDate").setValue(weekEndDate);
 
                             institutionEndPoint.child("lecturesData").child(lectureId).child("day").setValue(daysSelected.get(j));
+                            institutionEndPoint.child("lecturesData").child(lectureId).child("date").setValue(lectureDate);
                         }
 
                     }
@@ -316,6 +337,15 @@ public class CreateCourseActivity extends AppCompatActivity {
 
     private ArrayList<String> getSelectedDays(){
         ArrayList<String> daysSelected = new ArrayList<>();
+
+        daysToNum = new HashMap<>();
+        daysToNum.put("Monday",0);
+        daysToNum.put("Tuesday",1);
+        daysToNum.put("Wednesday",2);
+        daysToNum.put("Thursday",3);
+        daysToNum.put("Friday",4);
+        daysToNum.put("Saturday",5);
+        daysToNum.put("Sunday",6);
 
         if(_mon.isChecked())
             daysSelected.add("Monday");

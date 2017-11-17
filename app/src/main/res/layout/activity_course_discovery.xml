@@ -20,6 +20,13 @@
 
     </android.support.design.widget.AppBarLayout>
 
+    <android.support.v7.widget.SearchView
+        android:id="@+id/inp_searchView"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        app:defaultQueryHint="Search"
+        />
+
     <include layout="@layout/content_course_discovery" />
 
     <android.support.design.widget.FloatingActionButton
