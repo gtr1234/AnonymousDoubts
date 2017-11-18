@@ -211,7 +211,7 @@ public class CourseDiscovery extends AppCompatActivity {
                     }
                     else if(header.equals("Enrolled Courses") || header.equals("Your Courses")){
                         Intent myIntent = new Intent(CourseDiscovery.this, CourseHomepageActivity.class);
-                        // myIntent.putExtra("key", value); // should send user details
+                        myIntent.putExtra("courseUId", ((CourseMetaDataView) item).courseUId); // should send user details
                         CourseDiscovery.this.startActivity(myIntent);
                         finish();
                     }
