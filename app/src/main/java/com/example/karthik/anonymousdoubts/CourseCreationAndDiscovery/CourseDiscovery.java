@@ -40,6 +40,7 @@ import com.mikepenz.fastadapter.IAdapter;
 import com.mikepenz.fastadapter.IItem;
 import com.mikepenz.fastadapter.adapters.ItemAdapter;
 import com.mikepenz.fastadapter.listeners.OnClickListener;
+import com.mikepenz.materialize.MaterializeBuilder;
 import com.timehop.stickyheadersrecyclerview.StickyRecyclerHeadersDecoration;
 
 import java.util.ArrayList;
@@ -93,7 +94,7 @@ public class CourseDiscovery extends AppCompatActivity {
 
         searchView = (SearchView) findViewById(R.id.inp_searchView);
 
-
+        //new MaterializeBuilder().withActivity(this).build();
 
         mAuth = FirebaseAuth.getInstance();
         final FirebaseUser firebaseUser = mAuth.getCurrentUser();
@@ -266,13 +267,13 @@ public class CourseDiscovery extends AppCompatActivity {
         final ProgressDialog progressDialog = new ProgressDialog(CourseDiscovery.this,
                 R.style.AppTheme_Dark_Dialog);
 
-        if(initialState == 1){
+        //if(initialState == 1){
             Log.e(TAG, "progress dialog");
             progressDialog.setIndeterminate(true);
             progressDialog.setMessage("Fetching Courses...");
             progressDialog.show();
-            initialState = -1;
-        }
+        //    initialState = -1;
+        //}
 
         courseUIdsEndPoint.addValueEventListener(new ValueEventListener() {
             @Override
@@ -291,18 +292,16 @@ public class CourseDiscovery extends AppCompatActivity {
 
                 Log.e(TAG, " newenrolled courselist "+newEnrolledCourseUIdList.size());
                 if(isTeacher && !isStudent){
-                    getEnrolledCoursesMetaDataTeacher(newEnrolledCourseUIdList, itemAdapter);
+                    getEnrolledCoursesMetaDataTeacher(newEnrolledCourseUIdList, itemAdapter , progressDialog);
                 }
                 else if(!isTeacher && isStudent){
                     getAllCoursesMetaDataStudent(newEnrolledCourseUIdList,enrolledCourseUIdList,
-                            availableCourseUIdList, itemAdapter);
+                            availableCourseUIdList, itemAdapter, progressDialog);
                 }
 
 
-                if (initialState == -1) {
-                    progressDialog.dismiss();
-                    initialState = 0;
-                }
+
+
 
                 //courseUIdsEndPoint.removeEventListener(this);
             }
@@ -320,11 +319,7 @@ public class CourseDiscovery extends AppCompatActivity {
             public void run() {
                 if(!isTeacher && isStudent) {
                     getAllCoursesMetaDataStudent(new ArrayList<String>(),enrolledCourseUIdList,
-                            availableCourseUIdList, itemAdapter);
-                    progressDialog.dismiss();
-                }
-                else{
-                    progressDialog.dismiss();
+                            availableCourseUIdList, itemAdapter, progressDialog);
                 }
             }
         }, 3000);
@@ -333,7 +328,7 @@ public class CourseDiscovery extends AppCompatActivity {
 
 
     private void getEnrolledCoursesMetaDataTeacher(final ArrayList<String> newEnrolledCourseUIdList,
-                                                   final ItemAdapter itemAdapter){
+                                                   final ItemAdapter itemAdapter, final ProgressDialog progressDialog){
 
         for (int i = 0; i < newEnrolledCourseUIdList.size(); i++) {
             final String courseUid = newEnrolledCourseUIdList.get(i);
@@ -341,6 +336,7 @@ public class CourseDiscovery extends AppCompatActivity {
             DatabaseReference courseMetaDataEndPoint2 = courseMetaDataEndPoint.child("allCoursesMetaData")
                     .child(courseUid);
 
+            final int finalI = i;
             courseMetaDataEndPoint2.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
@@ -358,6 +354,10 @@ public class CourseDiscovery extends AppCompatActivity {
 
                     enrolledCourseUIdList.add(courseUid);
                     enrolledCourseCount++;
+
+                    if(finalI == newEnrolledCourseUIdList.size() - 1){
+                        progressDialog.dismiss();
+                    }
 
                 }
 
@@ -377,7 +377,7 @@ public class CourseDiscovery extends AppCompatActivity {
     private void getAllCoursesMetaDataStudent(final ArrayList<String> newEnrolledCourseUIdList,
                                               final ArrayList<String> alreadyEnrolledCourseUIdList,
                                               final ArrayList<String> alreadyavailableCourseUIdList,
-                                              final ItemAdapter itemAdapter){
+                                              final ItemAdapter itemAdapter, final ProgressDialog progressDialog){
 
         Log.e(TAG, "size newenrolled = "+newEnrolledCourseUIdList.size()+" already enrolled "+
                 alreadyEnrolledCourseUIdList.size() +" already avail "+alreadyavailableCourseUIdList.size());
@@ -433,7 +433,7 @@ public class CourseDiscovery extends AppCompatActivity {
 
                 }
 
-
+                progressDialog.dismiss();
                 /*itemAdapter.add(items);
                 itemAdapter.add(unEnrolledItems);*/
 

@@ -1,12 +1,14 @@
 package com.example.karthik.anonymousdoubts.Authentication;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -152,6 +154,13 @@ public class SignupActivity extends AppCompatActivity implements AdapterView.OnI
 
     public void onSignupSuccess() {
         _signupButton.setEnabled(true);
+
+        View view = this.getCurrentFocus();
+        if (view != null) {
+            InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        }
+
         setResult(RESULT_OK, null);
         Log.i(TAG,"finsihed Signup");
         finish();
