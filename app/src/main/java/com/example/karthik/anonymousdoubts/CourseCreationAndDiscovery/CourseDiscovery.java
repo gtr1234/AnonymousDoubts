@@ -56,8 +56,8 @@ public class CourseDiscovery extends AppCompatActivity {
     final ArrayList<String> enrolledCourseUIdList = new ArrayList<>();
     final ArrayList<String> availableCourseUIdList = new ArrayList<>();
 
-    private static int enrolledCourseCount = 1;
-    private static int unEnrolledCourseCount = 1;
+    private static int enrolledCourseCount = 0;
+    private static int unEnrolledCourseCount = 0;
 
     private FirebaseAuth mAuth;
     private DatabaseReference mDatabase;
@@ -285,7 +285,6 @@ public class CourseDiscovery extends AppCompatActivity {
                     String courseUid = noteSnapshot.getValue(String.class);
 
                     if (!enrolledCourseUIdList.contains(courseUid)) {
-                        enrolledCourseUIdList.add(courseUid);
                         newEnrolledCourseUIdList.add(courseUid);
                     }
                 }
@@ -305,7 +304,7 @@ public class CourseDiscovery extends AppCompatActivity {
                     initialState = 0;
                 }
 
-
+                //courseUIdsEndPoint.removeEventListener(this);
             }
 
             @Override
@@ -356,6 +355,8 @@ public class CourseDiscovery extends AppCompatActivity {
                             .withCourseUId(courseUid)
                             .withPasscode(passcode)
                             .withHeader("Your Courses").withIdentifier(1000 + enrolledCourseCount));
+
+                    enrolledCourseUIdList.add(courseUid);
                     enrolledCourseCount++;
 
                 }
@@ -379,15 +380,16 @@ public class CourseDiscovery extends AppCompatActivity {
                                               final ItemAdapter itemAdapter){
 
         Log.e(TAG, "size newenrolled = "+newEnrolledCourseUIdList.size()+" already enrolled "+
-                alreadyEnrolledCourseUIdList.size() +" already avail "+alreadyavailableCourseUIdList);
+                alreadyEnrolledCourseUIdList.size() +" already avail "+alreadyavailableCourseUIdList.size());
 
-        final List<IItem> items = new ArrayList<>();
-        final List<IItem> unEnrolledItems = new ArrayList<>();
+        /*final List<IItem> items;
+        final List<IItem> unEnrolledItems;*/
 
         DatabaseReference courseMetaDataEndPoint2 = courseMetaDataEndPoint.child("allCoursesMetaData");
         courseMetaDataEndPoint2.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
+
 
                 for (DataSnapshot noteSnapshot : dataSnapshot.getChildren()) {
                     CourseMetaData courseMetaData2 = noteSnapshot.getValue(CourseMetaData.class);
@@ -395,21 +397,28 @@ public class CourseDiscovery extends AppCompatActivity {
                     String courseUIdKey = noteSnapshot.getKey();
 
                     if (courseMetaData2 != null) {
-                        if (newEnrolledCourseUIdList.contains(courseUIdKey)) {
+                        if (newEnrolledCourseUIdList.contains(courseUIdKey)
+                                && !enrolledCourseUIdList.contains(courseUIdKey)) {
 
+
+                            List<IItem> items = new ArrayList<>();
                             items.add(new CourseMetaDataView().withCourseName(courseMetaData2.getCourseName())
                                     .withCourseTeacher(courseMetaData2.getCourseTeacher())
                                     .withCourseCode(courseMetaData2.getCourseCode())
                                     .withCourseUId(courseMetaData2.courseUId)
                                     .withPasscode(courseMetaData2.passcode)
                                     .withHeader("Enrolled Courses").withIdentifier(1000 + enrolledCourseCount));
+                            itemAdapter.add(0, items);
+
+
+                            enrolledCourseUIdList.add(courseUIdKey);
                             enrolledCourseCount++;
 
                         }
-                        else if (!alreadyavailableCourseUIdList.contains(courseUIdKey) &&
-                                !alreadyEnrolledCourseUIdList.contains(courseUIdKey)) {
+                        else if (!alreadyavailableCourseUIdList.contains(courseUIdKey)
+                                && !enrolledCourseUIdList.contains(courseUIdKey)) {
 
-                            unEnrolledItems.add(new CourseMetaDataView().withCourseName(courseMetaData2.getCourseName())
+                            itemAdapter.add(new CourseMetaDataView().withCourseName(courseMetaData2.getCourseName())
                                     .withCourseTeacher(courseMetaData2.getCourseTeacher())
                                     .withCourseCode(courseMetaData2.getCourseCode())
                                     .withCourseUId(courseMetaData2.courseUId)
@@ -425,8 +434,8 @@ public class CourseDiscovery extends AppCompatActivity {
                 }
 
 
-                itemAdapter.add(items);
-                itemAdapter.add(unEnrolledItems);
+                /*itemAdapter.add(items);
+                itemAdapter.add(unEnrolledItems);*/
 
             }
 
@@ -508,7 +517,7 @@ public class CourseDiscovery extends AppCompatActivity {
                                             .withCourseCode(courseCode)
                                             .withCourseUId(courseUId)
                                             .withPasscode(coursePasscode)
-                                            .withHeader(EnrolledCoursesDisplayHeader).withIdentifier(1000 + enrolledCourseCount));
+                                            .withHeader("Enrolled Courses").withIdentifier(1000 + enrolledCourseCount));
                                     enrolledCourseCount++;*/
 
                                     mDatabase.child("institution").child(institution).child("users")
