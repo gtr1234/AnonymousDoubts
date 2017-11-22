@@ -524,6 +524,10 @@ public class CourseDiscovery extends AppCompatActivity {
                                             .child(userId).child("courseUIds").child(courseUId)
                                             .setValue(courseUId);
 
+                                    mDatabase.child("institution").child(institution).child("allCoursesData")
+                                            .child(courseUId).child("StudentList").child(userId)
+                                            .setValue(userId);
+
 
                                 }
                                 else{
