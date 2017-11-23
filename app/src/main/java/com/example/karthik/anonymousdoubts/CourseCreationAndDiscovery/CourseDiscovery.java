@@ -321,6 +321,9 @@ public class CourseDiscovery extends AppCompatActivity {
                     getAllCoursesMetaDataStudent(new ArrayList<String>(),enrolledCourseUIdList,
                             availableCourseUIdList, itemAdapter, progressDialog);
                 }
+                else{
+                    progressDialog.dismiss();
+                }
             }
         }, 3000);
 
