@@ -8,6 +8,8 @@ import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -22,6 +24,7 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.karthik.anonymousdoubts.Authentication.LoginActivity;
@@ -68,6 +71,12 @@ public class CourseDiscovery extends AppCompatActivity {
 
     private static String institution;
 
+    private DrawerLayout mDrawerlayout;
+    private ActionBarDrawerToggle mToggle;
+    private TextView header_email_id;
+    private TextView userNameHeader;
+
+    String email_for_header;
     String email;
     boolean isTeacher;
     boolean isStudent;
@@ -77,6 +86,7 @@ public class CourseDiscovery extends AppCompatActivity {
     String userName;
 
     NavigationView navigationView;
+
 
     int initialState = 1;
 
@@ -92,6 +102,23 @@ public class CourseDiscovery extends AppCompatActivity {
         fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.hide();
 
+        //Edited here
+
+        mDrawerlayout = (DrawerLayout)findViewById(R.id.content_layout_discovery);
+        mToggle = new ActionBarDrawerToggle(this,mDrawerlayout,R.string.open,R.string.close);
+
+        mDrawerlayout.addDrawerListener(mToggle);
+        mToggle.syncState();
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+
+
+
+
+        //Ends here
+
+
+
         searchView = (SearchView) findViewById(R.id.inp_searchView);
 
         //new MaterializeBuilder().withActivity(this).build();
@@ -99,6 +126,20 @@ public class CourseDiscovery extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         final FirebaseUser firebaseUser = mAuth.getCurrentUser();
         userId = firebaseUser.getUid();
+        email_for_header =firebaseUser.getEmail();
+
+        //Edited for header
+        NavigationView navigationView = (NavigationView) findViewById(R.id.Navigation_view);
+        View headerView = navigationView.getHeaderView(0);
+        header_email_id = (TextView) headerView.findViewById(R.id.emailid_header_user);
+
+        userNameHeader = (TextView) headerView.findViewById(R.id.username_header);
+
+
+
+        //Log.e(TAG, "Email = "+email_for_header);
+        header_email_id.setText(email_for_header);
+
 
         institution = firebaseUser.getEmail().split("@")[1];
         institution = institution.replace(".","");
@@ -147,6 +188,7 @@ public class CourseDiscovery extends AppCompatActivity {
                 isStudent = (boolean) dataSnapshot.child("isStudent").getValue();
                 isTeacher = (boolean) dataSnapshot.child("isTeacher").getValue();
                 userName = dataSnapshot.child("name").getValue(String.class);
+                userNameHeader.setText(userName);
 
                 if(isTeacher) {
                     fab.show();
@@ -260,6 +302,12 @@ public class CourseDiscovery extends AppCompatActivity {
         getSupportActionBar().setHomeButtonEnabled(false);
 
     }
+
+
+
+    //EDITED HERE FOR HEADER
+
+
 
     private void addCourseMetaData(ItemAdapter headerAdapter, final ItemAdapter itemAdapter) {
 
@@ -565,6 +613,10 @@ public class CourseDiscovery extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         //handle the click on the back arrow click
+        //Edited here for header
+        if(mToggle.onOptionsItemSelected(item)){
+            return true;
+        }
         switch (item.getItemId()) {
             case android.R.id.home:
                 onBackPressed();
