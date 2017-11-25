@@ -91,6 +91,19 @@ public class CourseDiscovery extends AppCompatActivity {
     int initialState = 1;
 
     private FastAdapter fastAdapter;
+    private Toast backtoast;
+    //Edited here for onbackpressed
+
+    public void onBackPressed() {
+
+            if(backtoast!=null&&backtoast.getView().getWindowToken()!=null) {
+                finish();
+            } else {
+                backtoast = Toast.makeText(this, "Press back to exit", Toast.LENGTH_SHORT);
+                backtoast.show();
+            }
+
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

@@ -85,7 +85,7 @@ public class Course_AboutMeFragment extends Fragment {
 
                 Description = dataSnapshot.child("courseDescription").getValue(String.class);
 
-                Log.e(TAG,"descri = "+Description);
+                Log.e(TAG,"description = "+Description);
                 course_description.setText(Description);
 
             }

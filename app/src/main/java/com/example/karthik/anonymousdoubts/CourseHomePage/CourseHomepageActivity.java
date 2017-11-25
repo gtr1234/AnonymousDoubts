@@ -10,6 +10,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 
+import com.example.karthik.anonymousdoubts.CourseCreationAndDiscovery.CourseDiscovery;
 import com.example.karthik.anonymousdoubts.CourseHomePage.Course_AboutMeFragment;
 import com.example.karthik.anonymousdoubts.CourseHomePage.Course_LectureFragment;
 import com.example.karthik.anonymousdoubts.CourseHomePage.Course_StudentsFragment;
@@ -24,9 +25,31 @@ public class CourseHomepageActivity extends AppCompatActivity {
     private TabLayout tabLayout;
     private ViewPager viewPager;
 
+
+    @Override
+    public void onBackPressed() {
+
+        if (getFragmentManager().getBackStackEntryCount() > 0) {
+            getFragmentManager().popBackStack();
+        } else {
+            super.onBackPressed();
+            Intent i = new Intent(this, CourseDiscovery.class);
+            i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(i);
+            finish();
+
+        }
+
+
+    }
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+
+
         setContentView(R.layout.activity_course_homepage);
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -49,12 +72,14 @@ public class CourseHomepageActivity extends AppCompatActivity {
         String courseId = intent.getStringExtra("courseUId");
         Bundle bundle = new Bundle();
         bundle.putString("courseUId",courseId);
+        Fragment students_list = new Course_StudentsFragment();
         Fragment about_fragment = new Course_AboutMeFragment();
         about_fragment.setArguments(bundle);
+        students_list.setArguments(bundle);
 
         adapter.addFragment(new Course_LectureFragment(), "Weeks");
         adapter.addFragment(about_fragment, "About");
-        adapter.addFragment(new Course_StudentsFragment(), "Students");
+        adapter.addFragment(students_list, "Students");
         viewPager.setAdapter(adapter);
     }
 
@@ -85,5 +110,8 @@ public class CourseHomepageActivity extends AppCompatActivity {
         public CharSequence getPageTitle(int position) {
             return mFragmentTitleList.get(position);
         }
+
+
     }
+
 }
