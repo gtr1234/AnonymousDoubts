@@ -14,6 +14,13 @@
         android:paddingLeft="24dp"
         android:paddingRight="24dp">
 
+        <LinearLayout
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:layout_width="0px"
+            android:layout_height="0px"/>
+
+
         <!-- Name Label -->
         <android.support.design.widget.TextInputLayout
             android:layout_width="match_parent"
@@ -24,7 +31,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="textPersonName"
-                android:hint="Name" />
+                android:hint="Name"
+                android:nextFocusUp="@id/input_name"
+                android:nextFocusLeft="@id/input_name"/>
         </android.support.design.widget.TextInputLayout>
 
         <!-- Address Label -->

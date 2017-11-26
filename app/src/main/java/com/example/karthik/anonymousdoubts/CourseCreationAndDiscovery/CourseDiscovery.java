@@ -57,6 +57,10 @@ public class CourseDiscovery extends AppCompatActivity {
     private RecyclerView recyclerView;
     private SearchView searchView;
 
+    ProgressDialog progressDialog;
+
+    int noCourseState = 1;
+
     final ArrayList<String> enrolledCourseUIdList = new ArrayList<>();
     final ArrayList<String> availableCourseUIdList = new ArrayList<>();
 
@@ -218,13 +222,6 @@ public class CourseDiscovery extends AppCompatActivity {
 
 
 
-        // filling data
-        //addCourseMetaData(headerAdapter, itemAdapter);
-
-
-
-
-
         //EDITED HERE
         navigationView = (NavigationView) findViewById(R.id.Navigation_view);
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
@@ -324,21 +321,21 @@ public class CourseDiscovery extends AppCompatActivity {
 
     private void addCourseMetaData(ItemAdapter headerAdapter, final ItemAdapter itemAdapter) {
 
-
-        final ProgressDialog progressDialog = new ProgressDialog(CourseDiscovery.this,
+        progressDialog = new ProgressDialog(CourseDiscovery.this,
                 R.style.AppTheme_Dark_Dialog);
 
-        //if(initialState == 1){
-            Log.e(TAG, "progress dialog");
-            progressDialog.setIndeterminate(true);
-            progressDialog.setMessage("Fetching Courses...");
-            progressDialog.show();
-        //    initialState = -1;
-        //}
+
+        Log.e(TAG, "progress dialog");
+        progressDialog.setIndeterminate(true);
+        progressDialog.setMessage("Fetching Courses...");
+        progressDialog.show();
+
 
         courseUIdsEndPoint.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
+
+                noCourseState = 0;
 
                 final ArrayList<String> newEnrolledCourseUIdList = new ArrayList<>();
 
@@ -378,12 +375,13 @@ public class CourseDiscovery extends AppCompatActivity {
         Handler handler = new Handler();  // call should be state alert!!!!!!!!!!!!
         handler.postDelayed(new Runnable() {
             public void run() {
-                if(!isTeacher && isStudent) {
-                    getAllCoursesMetaDataStudent(new ArrayList<String>(),enrolledCourseUIdList,
-                            availableCourseUIdList, itemAdapter, progressDialog);
-                }
-                else{
-                    progressDialog.dismiss();
+                if(noCourseState == 1) {
+                    if (!isTeacher && isStudent) {
+                        getAllCoursesMetaDataStudent(new ArrayList<String>(), enrolledCourseUIdList,
+                                availableCourseUIdList, itemAdapter, progressDialog);
+                    } else {
+                        progressDialog.dismiss();
+                    }
                 }
             }
         }, 3000);

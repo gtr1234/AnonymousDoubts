@@ -5,6 +5,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
+import android.util.DisplayMetrics;
 import android.util.Log;
 
 import android.content.Intent;
@@ -12,6 +13,7 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -38,6 +40,7 @@ public class LoginActivity extends AppCompatActivity {
     EditText passwordText;
     Button loginButton;
     TextView signupLink;
+    ImageView logoImageView;
 
     private FirebaseAuth mAuth;
     
@@ -52,6 +55,10 @@ public class LoginActivity extends AppCompatActivity {
         passwordText = (EditText) findViewById(R.id.input_password);
         loginButton = (Button) findViewById(R.id.btn_login);
         signupLink = (TextView) findViewById(R.id.link_signup);
+
+        logoImageView = (ImageView) findViewById(R.id.logoImageView);
+
+        setSizeLogo(logoImageView);
 
         mAuth = FirebaseAuth.getInstance();
 
@@ -261,6 +268,20 @@ public class LoginActivity extends AppCompatActivity {
 
                     }
                 });
+
+    }
+
+
+    private void setSizeLogo(View view){
+
+        DisplayMetrics dm = new DisplayMetrics();
+        this.getWindowManager().getDefaultDisplay().getMetrics( dm );
+
+        int screenWidth = dm.widthPixels;
+        screenWidth = screenWidth - (int) Math.round(0.15*screenWidth);
+
+        view.getLayoutParams().width = screenWidth;
+        view.getLayoutParams().height = screenWidth/2;
 
     }
 
