@@ -1,12 +1,14 @@
 package com.example.karthik.anonymousdoubts.Authentication;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -74,6 +76,7 @@ public class SignupActivity extends AppCompatActivity implements AdapterView.OnI
                 String email = _emailText.getText().toString();
                 String password = _passwordText.getText().toString();
                 String reEnterPassword = _reEnterPasswordText.getText().toString();
+
 
                 createAccount(email, password, reEnterPassword, name);
             }
@@ -152,6 +155,13 @@ public class SignupActivity extends AppCompatActivity implements AdapterView.OnI
 
     public void onSignupSuccess() {
         _signupButton.setEnabled(true);
+
+        View view = this.getCurrentFocus();
+        if (view != null) {
+            InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        }
+
         setResult(RESULT_OK, null);
         Log.i(TAG,"finsihed Signup");
         finish();
@@ -186,9 +196,11 @@ public class SignupActivity extends AppCompatActivity implements AdapterView.OnI
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
+                            sendVerificationEmail(); //Edited here for email verification
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "createUserWithEmail:success");
                             FirebaseUser user = mAuth.getCurrentUser();
+                            //Edited here for verification
 
                             createUser(name, email, user.getUid());
 
@@ -230,6 +242,25 @@ public class SignupActivity extends AppCompatActivity implements AdapterView.OnI
         // [END create_user_with_email]
     }
 
+    //Edited here for email verification
+
+    public void sendVerificationEmail(){
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if(user!=null){
+            user.sendEmailVerification()
+                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+
+                            if(task.isSuccessful()){
+                                Toast.makeText(SignupActivity.this,"verification email sent successfully.",Toast.LENGTH_SHORT ).show();
+                            }else{
+                                Toast.makeText(SignupActivity.this,"Couldn't send verification email.",Toast.LENGTH_SHORT ).show();
+                            }
+                        }
+                    });
+        }
+    }
     public boolean validate(String name, String email, String password, String reEnterPassword) {
         boolean valid = true;
 

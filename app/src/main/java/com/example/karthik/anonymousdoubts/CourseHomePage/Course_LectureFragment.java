@@ -8,7 +8,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseExpandableListAdapter;
+import android.widget.ExpandableListAdapter;
 import android.widget.ExpandableListView;
 import android.widget.TextView;
 
@@ -89,7 +89,7 @@ public class Course_LectureFragment extends Fragment {
         View v= inflater.inflate(R.layout.fragment_course__lecture, container, false);
         listView = (ExpandableListView) v.findViewById(R.id.expandable_view);
         initData();
-        listAdapter = new ExpandableListAdapter(getActivity(),listDataHeader,listHash);
+        listAdapter = new MyExpandableListAdapter(getActivity(),listDataHeader,listHash);
         listView.setAdapter(listAdapter);
         return v;
     }

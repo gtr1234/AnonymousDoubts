@@ -2,9 +2,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:layout_gravity="center"
     tools:context="com.example.karthik.anonymousdoubts.CourseHomePage.Course_StudentsFragment">
 
     <!-- TODO: Update blank fragment layout -->
 
 
+    <ListView
+        android:id="@+id/course_students_list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 </FrameLayout>

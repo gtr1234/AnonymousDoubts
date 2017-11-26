@@ -1,6 +1,7 @@
 package com.example.karthik.anonymousdoubts.Authentication;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -8,6 +9,7 @@ import android.util.Log;
 
 import android.content.Intent;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -80,7 +82,7 @@ public class LoginActivity extends AppCompatActivity {
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 FirebaseUser user = firebaseAuth.getCurrentUser();
                 if(user != null){
-                    onLoginSuccess();
+                    onLoginSuccess(null, 0);
                 }
             }
         };
@@ -117,11 +119,7 @@ public class LoginActivity extends AppCompatActivity {
                 // TODO: Implement successful signup logic here
                 // By default we just finish the Activity and log them in automatically
 
-                Intent myIntent = new Intent(LoginActivity.this, CourseDiscovery.class);
-                // myIntent.putExtra("key", value); // should send user details
-                LoginActivity.this.startActivity(myIntent);
-
-                this.finish();
+                onLoginSuccess(null, 1);
 
             }
             else{
@@ -139,13 +137,46 @@ public class LoginActivity extends AppCompatActivity {
         moveTaskToBack(true);
     }
 
-    public void onLoginSuccess() {
+    public void onLoginSuccess(ProgressDialog progressDialog, int state) {
         loginButton.setEnabled(true);
-        Log.e(TAG,"came here");
-        Intent myIntent = new Intent(LoginActivity.this, CourseDiscovery.class);
-        // myIntent.putExtra("key", value); // should send user details
-        LoginActivity.this.startActivity(myIntent);
-        finish();
+
+        View view = this.getCurrentFocus();
+        if (view != null) {
+            InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        }
+
+        FirebaseUser user = mAuth.getCurrentUser();
+
+        //edited here for email verification
+
+        try {
+            if (user.isEmailVerified()) {
+                Log.d(TAG,"onComplete : Success, Email verifired");
+                Intent myIntent = new Intent(LoginActivity.this, CourseDiscovery.class);
+                // myIntent.putExtra("key", value); // should send user details
+                LoginActivity.this.startActivity(myIntent);
+                finish();
+            }else{
+                mAuth.signOut();
+                Log.d(TAG,"onComplete : Success, Email not verifired");
+                String msg = "";
+                if(state == 0){
+                    msg = "Email not verified, please check your email";
+                }
+                else if(state == 1){
+                    msg = "Please verify your email";
+                }
+
+
+                Toast.makeText(LoginActivity.this, msg, Toast.LENGTH_LONG).show();
+            }
+        }catch (NullPointerException e){
+            Log.e(TAG,"onComplete: Nullpointer Exception: "+e.getMessage());
+        }
+
+        if(progressDialog != null)
+            progressDialog.dismiss();
     }
 
     public void onLoginFailed(String msg) {
@@ -198,9 +229,9 @@ public class LoginActivity extends AppCompatActivity {
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "signInWithEmail:success");
-                            FirebaseUser user = mAuth.getCurrentUser();
-                            onLoginSuccess();
-                            progressDialog.dismiss();
+
+                           onLoginSuccess(progressDialog, 0);
+
                         } else {
                             // If sign in fails, display a message to the user.
                             String message = "Authentication failed";

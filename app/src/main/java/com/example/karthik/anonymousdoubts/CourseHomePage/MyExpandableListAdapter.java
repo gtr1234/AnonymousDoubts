@@ -13,14 +13,14 @@ import com.example.karthik.anonymousdoubts.R;
 import java.util.HashMap;
 import java.util.List;
 
-public class ExpandableListAdapter extends BaseExpandableListAdapter {
+public class MyExpandableListAdapter extends BaseExpandableListAdapter {
 
 
     private Context context;
     private List<String> listDataHeader;
     private HashMap<String,List<String>> listHashMap;
 
-    public ExpandableListAdapter(Context context,List<String> listDataHeader,HashMap<String,List<String>> listHashMap){
+    public MyExpandableListAdapter(Context context, List<String> listDataHeader, HashMap<String,List<String>> listHashMap){
 
         this.context = context;
         this.listDataHeader = listDataHeader;
