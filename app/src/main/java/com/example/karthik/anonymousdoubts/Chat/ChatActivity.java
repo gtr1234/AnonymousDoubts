@@ -29,12 +29,9 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-
-import org.joda.time.DateTime;
-import org.joda.time.LocalTime;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 public class ChatActivity extends AppCompatActivity {
@@ -47,7 +44,8 @@ public class ChatActivity extends AppCompatActivity {
 
     final FirebaseDatabase database = FirebaseDatabase.getInstance();
     private DatabaseReference ref = database.getReference();
-    private DatabaseReference msgEndPoint;
+    private DatabaseReference lectureChatEndpoint;
+    private DatabaseReference messagesEndPoint;
 
     private FirebaseAuth mAuth  = FirebaseAuth.getInstance();
     final FirebaseUser firebaseUser = mAuth.getCurrentUser();
@@ -68,6 +66,7 @@ public class ChatActivity extends AppCompatActivity {
         sendButton = (Button) findViewById(R.id.button_chatbox_send);
         switch1 = (Switch) findViewById(R.id.switch1);
 
+        String lectureID = getIntent().getStringExtra("lectureID");
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -105,16 +104,32 @@ public class ChatActivity extends AppCompatActivity {
         String institution = firebaseUser.getEmail().split("@")[1];
         institution = institution.replace(".","");
         final String username = firebaseUser.getEmail().split("@")[0];
-        msgEndPoint = ref.child("institution").child(institution).child("messages");
 
-        msgEndPoint.addChildEventListener(new ChildEventListener() {
+        messagesEndPoint = ref.child("institution").child(institution).child("messages");
+        lectureChatEndpoint = ref.child("institution").child(institution).child("chats").child(lectureID);
+
+
+
+        lectureChatEndpoint.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                ChatMessage message = dataSnapshot.getValue(ChatMessage.class);
-                messageList.add(message);
-                Log.d(TAG,"Child added");
 
-                messageListAdapter.updateMessageList(messageList);
+                String msgId = dataSnapshot.getValue(String.class);
+                messagesEndPoint.child(msgId).addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        ChatMessage message = dataSnapshot.getValue(ChatMessage.class);
+                        //Log.d(TAG,message.getMessageText());
+                        messageList.add(message);
+                        messageListAdapter.updateMessageList(messageList);
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
+
 
             }
 
@@ -148,7 +163,15 @@ public class ChatActivity extends AppCompatActivity {
                 EditText input = (EditText)findViewById(R.id.edittext_chatbox);
 
                 Log.d(TAG,"Message sent with FLAG: " + isPrivate);
-                msgEndPoint.push().setValue(new ChatMessage(input.getText().toString(),username,isPrivate));
+                ChatMessage objToSend = new ChatMessage(input.getText().toString(),username,isPrivate);
+                messagesEndPoint.push().setValue(objToSend, new DatabaseReference.CompletionListener() {
+                    @Override
+                    public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+                       String pushedKey = databaseReference.getKey();
+                       lectureChatEndpoint.push().setValue(pushedKey);
+                    }
+                });
+
 
                 input.setText("");
             }
@@ -156,6 +179,9 @@ public class ChatActivity extends AppCompatActivity {
 
 
     }
+
+
+
 
     private void setNormalUI() {
         getSupportActionBar().setBackgroundDrawable( new ColorDrawable(ContextCompat.getColor(this,R.color.primary)));

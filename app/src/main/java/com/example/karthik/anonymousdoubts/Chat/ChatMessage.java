@@ -11,6 +11,7 @@ public class ChatMessage {
     private boolean anon;
     private String messageTime;
 
+
     public ChatMessage(String messageText, String messageUser,boolean anon) {
         LocalTime mTime = LocalTime.now();
         String time = new StringBuilder("").append(mTime.getHourOfDay()).append(":").append(mTime.getMinuteOfHour()).toString();
