@@ -10,9 +10,11 @@ public class ChatMessage {
     private String messageUser;
     private boolean anon;
     private String messageTime;
+    private String userUid;
 
 
-    public ChatMessage(String messageText, String messageUser,boolean anon) {
+
+    public ChatMessage(String messageText, String messageUser,String userUid,boolean anon) {
         LocalTime mTime = LocalTime.now();
         String time = new StringBuilder("").append(mTime.getHourOfDay()).append(":").append(mTime.getMinuteOfHour()).toString();
 
@@ -20,6 +22,7 @@ public class ChatMessage {
         this.messageUser = messageUser;
         this.messageTime = time;
         this.anon = anon;
+        this.userUid = userUid;
     }
 
     public ChatMessage(){
@@ -53,5 +56,13 @@ public class ChatMessage {
 
     public void setAnon(boolean anon) {
         this.anon = anon;
+    }
+
+    public String getUserUid() {
+        return userUid;
+    }
+
+    public void setUserUid(String userUid) {
+        this.userUid = userUid;
     }
 }

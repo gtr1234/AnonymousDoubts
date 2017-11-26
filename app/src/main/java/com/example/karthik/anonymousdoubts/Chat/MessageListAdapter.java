@@ -23,10 +23,15 @@ public class MessageListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
     private Context mContext;
     private List<ChatMessage> mMessageList;
+    private String userUid;
+    private boolean isTeacher;
 
-    public MessageListAdapter(Context context, List<ChatMessage> messageList) {
+    public MessageListAdapter(Context context, List<ChatMessage> messageList,String userUid,boolean isTeacher) {
         mContext = context;
         mMessageList = messageList;
+
+        this.isTeacher = isTeacher;
+        this.userUid = userUid;
     }
 
 
@@ -40,8 +45,7 @@ public class MessageListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     public int getItemViewType(int position) {
         ChatMessage message = mMessageList.get(position);
 
-        if (message.getMessageUser().equals(FirebaseAuth.getInstance()
-                .getCurrentUser().getEmail().split("@")[0]))
+        if (message.getUserUid().equals(userUid))
         {
 
             return VIEW_TYPE_MESSAGE_SENT;
@@ -115,7 +119,7 @@ public class MessageListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
             timeText.setText(message.getMessageTime());
 
-            if(!message.isAnon()){
+            if(!message.isAnon() || isTeacher){
                 nameText.setText(message.getMessageUser());
             }else{
                 nameText.setText(mContext.getResources().getString(R.string.AnonMode));

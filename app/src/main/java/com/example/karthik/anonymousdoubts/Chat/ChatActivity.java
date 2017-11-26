@@ -41,9 +41,12 @@ public class ChatActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private List<ChatMessage> messageList;
     private boolean isPrivate;
+    private boolean isTeacher;
+    private String userName;
 
     final FirebaseDatabase database = FirebaseDatabase.getInstance();
     private DatabaseReference ref = database.getReference();
+    private DatabaseReference instituteRef;
     private DatabaseReference lectureChatEndpoint;
     private DatabaseReference messagesEndPoint;
 
@@ -91,23 +94,37 @@ public class ChatActivity extends AppCompatActivity {
             }
         });
 
+        String institution = firebaseUser.getEmail().split("@")[1];
+        institution = institution.replace(".","");
 
+
+        instituteRef = ref.child("institution").child(institution);
+        DatabaseReference userEndPoint = instituteRef.child("users").child(firebaseUser.getUid());
+
+        userEndPoint.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                isTeacher = (boolean) dataSnapshot.child("isTeacher").getValue();
+                userName = dataSnapshot.child("name").getValue(String.class);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
 
         messageList = new ArrayList<>();
-        messageListAdapter = new MessageListAdapter(ChatActivity.this, messageList);
+        messageListAdapter = new MessageListAdapter(ChatActivity.this, messageList,firebaseUser.getUid(),isTeacher);
 
         recyclerView = (RecyclerView) findViewById(R.id.reyclerview_message_list);
         recyclerView.setLayoutManager(new LinearLayoutManager(ChatActivity.this));
         recyclerView.setAdapter(messageListAdapter);
 
 
-        String institution = firebaseUser.getEmail().split("@")[1];
-        institution = institution.replace(".","");
-        final String username = firebaseUser.getEmail().split("@")[0];
 
-        messagesEndPoint = ref.child("institution").child(institution).child("messages");
-        lectureChatEndpoint = ref.child("institution").child(institution).child("chats").child(lectureID);
-
+        messagesEndPoint = instituteRef.child("messages");
+        lectureChatEndpoint = instituteRef.child("chats").child(lectureID);
 
 
         lectureChatEndpoint.addChildEventListener(new ChildEventListener() {
@@ -163,7 +180,7 @@ public class ChatActivity extends AppCompatActivity {
                 EditText input = (EditText)findViewById(R.id.edittext_chatbox);
 
                 Log.d(TAG,"Message sent with FLAG: " + isPrivate);
-                ChatMessage objToSend = new ChatMessage(input.getText().toString(),username,isPrivate);
+                ChatMessage objToSend = new ChatMessage(input.getText().toString(),userName,firebaseUser.getUid(),isPrivate);
                 messagesEndPoint.push().setValue(objToSend, new DatabaseReference.CompletionListener() {
                     @Override
                     public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
