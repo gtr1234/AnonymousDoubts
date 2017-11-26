@@ -50,6 +50,7 @@ public class EmailVerificationActivity extends AppCompatActivity {
         setContentView(R.layout.activity_email_verification);
 
         mAuth = FirebaseAuth.getInstance();
+
         firebaseUser = mAuth.getCurrentUser();
         userId = firebaseUser.getUid();
 
@@ -101,6 +102,9 @@ public class EmailVerificationActivity extends AppCompatActivity {
         alreadyVerified.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                firebaseUser.reload();
+                Log.e("EmailVerification"," emailVerified = "+firebaseUser.isEmailVerified() +"  "+firebaseUser);
+
                 if(firebaseUser.isEmailVerified()){
                     Intent myIntent = new Intent(EmailVerificationActivity.this, CourseDiscovery.class);
                     EmailVerificationActivity.this.startActivity(myIntent);

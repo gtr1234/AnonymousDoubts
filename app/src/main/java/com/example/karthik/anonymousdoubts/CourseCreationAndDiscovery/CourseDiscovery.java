@@ -557,7 +557,7 @@ public class CourseDiscovery extends AppCompatActivity {
         // set prompts.xml to alertdialog builder
         alertDialogBuilder.setView(promptsView);
 
-        TextView alertDialogTextView = (TextView) findViewById(R.id.alertdialogTextView);
+        TextView alertDialogTextView = (TextView) promptsView.findViewById(R.id.alertdialogTextView);
         alertDialogTextView.setText("Enter the Passcode for "+courseCode);
         alertDialogBuilder.setTitle("Passcode");
 
