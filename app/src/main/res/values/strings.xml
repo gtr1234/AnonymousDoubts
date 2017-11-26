@@ -15,4 +15,8 @@
     <string name="settings">Settings</string>
     <string name="activities">Activities</string>
     <string name="logout">Logout</string>
+    <string name="title_activity_chat">ChatActivity</string>
+    <string name="EnterMessage">Enter a message..</string>
+    <string name="SendButtonText">SEND</string>
+    <string name="AnonMode">Anonymous</string>
 </resources>
