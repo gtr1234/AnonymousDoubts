@@ -79,45 +79,6 @@ public class Course_LectureFragment extends Fragment {
 
 
     }
-    //Function to add junk data
-    public void initData(){
-        /*
-        listDataHeader = new ArrayList<>();
-        listHash = new HashMap<>();
-        */
-
-        listDataHeader.add("Week 1");
-        listDataHeader.add("Week 2");
-        listDataHeader.add("Week 3");
-        listDataHeader.add("Week 4");
-
-
-        List<String> week1 = new ArrayList<>();
-        week1.add("Monday 2:25PM - 3:15PM");
-        week1.add("Tuesday 1:30PM - 2:20PM");
-        week1.add("Thursday 9:00AM - 9:50AM");
-
-        List<String> week2 = new ArrayList<>();
-        week2.add("Monday 10:40AM - 11:30AM");
-        week2.add("Wednesday 10:40AM - 11:30AM");
-        week2.add("Thursday 11:40AM - 12:30AM");
-
-        List<String> week3 = new ArrayList<>();
-        week3.add("Monday 10:40AM - 11:30AM");
-        week3.add("Wednesday 10:40AM - 11:30AM");
-        week3.add("Friday 9:00AM - 9:50AM");
-
-        List<String> week4 = new ArrayList<>();
-        week4.add("Thursday 9:00AM - 9:50AM");
-        week4.add("Saturday 9:00AM - 9:50AM");
-        week4.add("Sunday 10AM - 11AM");
-
-        listHash.put(listDataHeader.get(0),week1);
-        listHash.put(listDataHeader.get(1),week2);
-        listHash.put(listDataHeader.get(2),week3);
-        listHash.put(listDataHeader.get(3),week4);
-
-    }
 
 
     @Override

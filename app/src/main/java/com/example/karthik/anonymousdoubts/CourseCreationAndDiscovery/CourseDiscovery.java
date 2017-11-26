@@ -89,10 +89,6 @@ public class CourseDiscovery extends AppCompatActivity {
     FloatingActionButton fab;
     String userName;
 
-    NavigationView navigationView;
-
-
-    int initialState = 1;
 
     private FastAdapter fastAdapter;
     private Toast backtoast;

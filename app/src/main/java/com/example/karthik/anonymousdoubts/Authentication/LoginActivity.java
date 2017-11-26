@@ -26,8 +26,11 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.FirebaseAuthInvalidUserException;
 import com.google.firebase.auth.FirebaseUser;
-
-
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 
 public class LoginActivity extends AppCompatActivity {
@@ -43,6 +46,11 @@ public class LoginActivity extends AppCompatActivity {
     ImageView logoImageView;
 
     private FirebaseAuth mAuth;
+
+    private DatabaseReference mDatabase;
+    private DatabaseReference userIdEndPoint;
+
+    FirebaseUser user;
     
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -87,7 +95,7 @@ public class LoginActivity extends AppCompatActivity {
         mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                FirebaseUser user = firebaseAuth.getCurrentUser();
+                user = firebaseAuth.getCurrentUser();
                 if(user != null){
                     onLoginSuccess(null, 0);
                 }
@@ -153,7 +161,7 @@ public class LoginActivity extends AppCompatActivity {
             imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
         }
 
-        FirebaseUser user = mAuth.getCurrentUser();
+        user = mAuth.getCurrentUser();
 
         //edited here for email verification
 
@@ -161,11 +169,11 @@ public class LoginActivity extends AppCompatActivity {
             if (user.isEmailVerified()) {
                 Log.d(TAG,"onComplete : Success, Email verifired");
                 Intent myIntent = new Intent(LoginActivity.this, CourseDiscovery.class);
-                // myIntent.putExtra("key", value); // should send user details
+                //myIntent.putExtra("userName", ); // should send user details
                 LoginActivity.this.startActivity(myIntent);
                 finish();
             }else{
-                mAuth.signOut();
+                /*mAuth.signOut();
                 Log.d(TAG,"onComplete : Success, Email not verifired");
                 String msg = "";
                 if(state == 0){
@@ -174,9 +182,12 @@ public class LoginActivity extends AppCompatActivity {
                 else if(state == 1){
                     msg = "Please verify your email";
                 }
+                */
 
+                Intent myIntent = new Intent(LoginActivity.this, EmailVerificationActivity.class);
+                LoginActivity.this.startActivity(myIntent);
+                finish();
 
-                Toast.makeText(LoginActivity.this, msg, Toast.LENGTH_LONG).show();
             }
         }catch (NullPointerException e){
             Log.e(TAG,"onComplete: Nullpointer Exception: "+e.getMessage());

@@ -150,6 +150,8 @@ public class SignupActivity extends AppCompatActivity implements AdapterView.OnI
 
         User user = new User(email, name, isStudent, isTeacher, null);
         mFirebaseDatabaseReference.child(institution).child("users").child(uId).setValue(user);
+        mFirebaseDatabaseReference.child(institution).child("users").child(uId)
+                .child("isEmailVerified").setValue(false);
 
     }
 

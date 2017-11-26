@@ -39,6 +39,8 @@
             android:theme="@style/AppTheme.Dark" />
         <activity android:name=".CourseCreationAndDiscovery.CreateCourseActivity"></activity>
 
+        <activity android:name=".Authentication.EmailVerificationActivity"></activity>
+
         <activity android:name=".Chat.ChatActivity"
             android:theme="@style/AppTheme.Dark"
             />
