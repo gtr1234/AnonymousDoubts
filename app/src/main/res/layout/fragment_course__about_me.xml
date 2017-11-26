@@ -8,8 +8,8 @@
         android:id="@+id/course_description_text"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:paddingLeft="5dp"
-        android:paddingRight="5dp"
+        android:paddingLeft="8dp"
+        android:paddingRight="8dp"
         android:textAlignment="viewStart"
         android:textColor="@color/white"
         android:textSize="26sp" />

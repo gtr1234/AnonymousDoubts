@@ -228,12 +228,7 @@ public class CourseDiscovery extends AppCompatActivity {
 
                 switch (id){
 
-                    case R.id.db:
-                        break;
-                    case R.id.activity:
-                        break;
-                    case R.id.settings:
-                        break;
+
                     case R.id.singout:
                         signOut();
                         break;

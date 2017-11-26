@@ -57,7 +57,7 @@ public class Course_LectureFragment extends Fragment {
 
 
 
-    private ArrayList<WeekMetaData> weekMetaDataArrayList = new ArrayList<>();;
+    //private ArrayList<WeekMetaData> weekMetaDataArrayList = new ArrayList<>();;
 
 
 
@@ -123,7 +123,7 @@ public class Course_LectureFragment extends Fragment {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
 
-
+                final ArrayList<WeekMetaData> weekMetaDataArrayList = new ArrayList<>();
 
                 for (DataSnapshot noteSnapshot: dataSnapshot.getChildren()) {
 
