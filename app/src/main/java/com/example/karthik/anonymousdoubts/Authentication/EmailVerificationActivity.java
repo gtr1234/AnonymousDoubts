@@ -2,6 +2,7 @@ package com.example.karthik.anonymousdoubts.Authentication;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -24,6 +25,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import org.w3c.dom.Text;
+
+import java.util.ArrayList;
 
 public class EmailVerificationActivity extends AppCompatActivity {
 
@@ -105,15 +108,21 @@ public class EmailVerificationActivity extends AppCompatActivity {
                 firebaseUser.reload();
                 Log.e("EmailVerification"," emailVerified = "+firebaseUser.isEmailVerified() +"  "+firebaseUser);
 
-                if(firebaseUser.isEmailVerified()){
-                    Intent myIntent = new Intent(EmailVerificationActivity.this, CourseDiscovery.class);
-                    EmailVerificationActivity.this.startActivity(myIntent);
-                    finish();
-                }
-                else{
-                    Toast.makeText(EmailVerificationActivity.this,
-                            "Please verify your Email first",Toast.LENGTH_SHORT ).show();
-                }
+                Handler handler = new Handler();  // call should be state alert!!!!!!!!!!!!
+                handler.postDelayed(new Runnable() {
+                    public void run() {
+                        if(firebaseUser.isEmailVerified()){
+                            Intent myIntent = new Intent(EmailVerificationActivity.this, CourseDiscovery.class);
+                            EmailVerificationActivity.this.startActivity(myIntent);
+                            finish();
+                        }
+                        else{
+                            Toast.makeText(EmailVerificationActivity.this,
+                                    "Please verify your Email first",Toast.LENGTH_SHORT ).show();
+                        }
+                    }
+                }, 2000);
+
             }
         });
 
