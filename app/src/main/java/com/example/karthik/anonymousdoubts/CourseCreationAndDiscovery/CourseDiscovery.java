@@ -248,6 +248,15 @@ public class CourseDiscovery extends AppCompatActivity {
         });
 
 
+        progressDialog = new ProgressDialog(CourseDiscovery.this,
+                R.style.AppTheme_Dark_Dialog);
+
+
+        Log.e(TAG, "progress dialog");
+        progressDialog.setIndeterminate(true);
+        progressDialog.setMessage("Fetching Courses...");
+        progressDialog.show();
+
         fastAdapter.withOnClickListener(new OnClickListener<IItem>() {
             @Override
             public boolean onClick(View v, IAdapter<IItem> adapter, IItem item, int position) {
@@ -320,15 +329,6 @@ public class CourseDiscovery extends AppCompatActivity {
 
 
     private void addCourseMetaData(ItemAdapter headerAdapter, final ItemAdapter itemAdapter) {
-
-        progressDialog = new ProgressDialog(CourseDiscovery.this,
-                R.style.AppTheme_Dark_Dialog);
-
-
-        Log.e(TAG, "progress dialog");
-        progressDialog.setIndeterminate(true);
-        progressDialog.setMessage("Fetching Courses...");
-        progressDialog.show();
 
 
         courseUIdsEndPoint.addValueEventListener(new ValueEventListener() {
