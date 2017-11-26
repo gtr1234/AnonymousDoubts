@@ -2,6 +2,7 @@ package com.example.karthik.anonymousdoubts.CourseHomePage;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
@@ -14,6 +15,9 @@ import android.widget.ExpandableListAdapter;
 import android.widget.ExpandableListView;
 import android.widget.TextView;
 
+import com.example.karthik.anonymousdoubts.Chat.ChatActivity;
+import com.example.karthik.anonymousdoubts.CourseCreationAndDiscovery.LectureMetaData;
+import com.example.karthik.anonymousdoubts.CourseCreationAndDiscovery.WeekMetaData;
 import com.example.karthik.anonymousdoubts.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -46,13 +50,20 @@ public class Course_LectureFragment extends Fragment {
     private DatabaseReference weekDataEndPoint;
     private DatabaseReference lectureDataEndPoint;
     private static final String TAG = "CourseLectureFragment";
-    static int week_count =1;
+    static int week_count =0;
     String userId;
     String week = "Week ";
     private static String institution;
 
+
+
+    private ArrayList<WeekMetaData> weekMetaDataArrayList = new ArrayList<>();;
+
+
+
+
     private ExpandableListView listView;
-    private ExpandableListAdapter listAdapter;
+    private MyNewExpandableListAdapter listAdapter;
     private List<String> listDataHeader = new ArrayList<>();
     private HashMap<String,List<String>> listHash = new HashMap<>();
 
@@ -145,10 +156,12 @@ public class Course_LectureFragment extends Fragment {
         progressDialog.show();
 
 
+
         weekIdEndPoint.addValueEventListener(new ValueEventListener() {
 
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
+
 
 
                 for (DataSnapshot noteSnapshot: dataSnapshot.getChildren()) {
@@ -164,34 +177,36 @@ public class Course_LectureFragment extends Fragment {
                             final String endDate   = dataSnapshot.child("EndDate").getValue(String.class);
                             final String count_week      = Integer.toString(week_count);
                             week_count++;
-                            Log.e(TAG,week+week_count+" "+startDate+"  "+endDate);
+                            //Log.e(TAG,week+week_count+" "+startDate+"  "+endDate);
 
-                            listDataHeader.add(week+count_week);
 
                             DatabaseReference LectureIdEndPoint = weekDataEndPoint.child(weekId).child("lectureIds");
-
+                            final ArrayList<LectureMetaData> temp_lectureData = new ArrayList<>();
                             LectureIdEndPoint.addValueEventListener(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(DataSnapshot dataSnapshot) {
 
-                                    final List<String> temp = new ArrayList<>();
+
 
                                     for(DataSnapshot dataSnapshot1: dataSnapshot.getChildren())
                                     {
 
-                                        String lectureData = dataSnapshot1.getValue(String.class);
+                                        final String lectureData = dataSnapshot1.getValue(String.class);
 
                                         lectureDataEndPoint.child(lectureData).addValueEventListener(new ValueEventListener() {
                                             @Override
                                             public void onDataChange(DataSnapshot dataSnapshot) {
 
 
-
                                                 String date = dataSnapshot.child("date").getValue(String.class);
                                                 String day  = dataSnapshot.child("day").getValue(String.class);
-                                                temp.add(day+" - "+date);
 
-                                                Log.e(TAG,week+week_count+" "+date+"  "+day);
+                                                LectureMetaData lectureMetaData = new LectureMetaData(lectureData,date,day);
+                                                if(!temp_lectureData.contains(lectureMetaData)) {
+                                                    temp_lectureData.add(lectureMetaData);
+                                                }
+                                                //temp.add(day+" - "+date);
+                                                //Log.e(TAG,week+week_count+" "+date+"  "+day);
 
                                             }
 
@@ -204,7 +219,7 @@ public class Course_LectureFragment extends Fragment {
 
                                     }
 
-                                    listHash.put(week+count_week,temp);
+                                    //listHash.put(week+count_week,temp);
                                     progressDialog.dismiss();
                                 }
 
@@ -214,6 +229,22 @@ public class Course_LectureFragment extends Fragment {
                                 }
                             });
 
+
+                            //EDITED HERE
+
+                            WeekMetaData weekMetaData = new WeekMetaData(Integer.toString(week_count),weekId,startDate,endDate,temp_lectureData);
+                            if(!weekMetaDataArrayList.contains(weekMetaData)) {
+                                weekMetaDataArrayList.add(weekMetaData);
+                            }
+                            //Log.e(TAG,"Added values "+weekMetaData.weekUId+" "+weekMetaData.getStartDate()+" "+weekMetaData.getEndDate());
+                            //temp_lectureData.clear();
+
+                            listAdapter = new MyNewExpandableListAdapter(getActivity(),weekMetaDataArrayList);
+                            //Log.d(TAG,"Came here");
+
+
+                            listView.setAdapter(listAdapter);
+
                         }
 
                         @Override
@@ -222,12 +253,8 @@ public class Course_LectureFragment extends Fragment {
                         }
                     });
 
-
-
                 }
-
             }
-
 
 
             @Override
@@ -236,16 +263,30 @@ public class Course_LectureFragment extends Fragment {
             }
 
         });
-        week_count =1;
+        week_count =0;
 
 
-
+        //Log.e(TAG,"Count = "+Integer.toString(weekMetaDataArrayList.size()));
 
         //initData();
-        listAdapter = new MyExpandableListAdapter(getActivity(),listDataHeader,listHash);
-        listView.setAdapter(listAdapter);
+
+        listView.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
+            @Override
+            public boolean onChildClick(ExpandableListView expandableListView, View view, int i, int i1, long l) {
+
+                Intent intent = new Intent(getActivity(), ChatActivity.class);
+
+                String lectureID = listAdapter.getUid(i,i1);
+
+                intent.putExtra("lectureID",lectureID);
+                startActivity(intent);
+
+                return true;
+            }
+        });
         //listView.setOnChildClickListener();
-        listDataHeader.clear();
+
+
         //listHash.clear();
 
         return v;

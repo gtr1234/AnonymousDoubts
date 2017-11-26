@@ -38,6 +38,11 @@
             android:label="@string/title_activity_course_discovery"
             android:theme="@style/AppTheme.Dark" />
         <activity android:name=".CourseCreationAndDiscovery.CreateCourseActivity"></activity>
+
+        <activity android:name=".Chat.ChatActivity"
+            android:theme="@style/AppTheme.Dark"
+            />
+
     </application>
 
 </manifest>
