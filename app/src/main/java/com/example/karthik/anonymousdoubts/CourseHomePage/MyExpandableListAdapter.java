@@ -72,7 +72,7 @@ public class MyExpandableListAdapter extends BaseExpandableListAdapter {
 
     @Override
     public View getGroupView(int i, boolean b, View view, ViewGroup viewGroup) {
-
+        view = null;
         String headerTitle = (String)getGroup(i);
 
         if(view==null){
@@ -92,7 +92,7 @@ public class MyExpandableListAdapter extends BaseExpandableListAdapter {
     public View getChildView(int i, int i1, boolean b, View view, ViewGroup viewGroup) {
 
         final String childText = (String)getChild(i,i1);
-
+        view = null;
         if(view==null){
 
             LayoutInflater inflater = (LayoutInflater)this.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);

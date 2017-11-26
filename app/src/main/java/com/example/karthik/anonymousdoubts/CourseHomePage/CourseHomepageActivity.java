@@ -74,10 +74,12 @@ public class CourseHomepageActivity extends AppCompatActivity {
         bundle.putString("courseUId",courseId);
         Fragment students_list = new Course_StudentsFragment();
         Fragment about_fragment = new Course_AboutMeFragment();
+        Fragment course_lecture = new Course_LectureFragment();
         about_fragment.setArguments(bundle);
         students_list.setArguments(bundle);
+        course_lecture.setArguments(bundle);
 
-        adapter.addFragment(new Course_LectureFragment(), "Weeks");
+        adapter.addFragment(course_lecture, "Weeks");
         adapter.addFragment(about_fragment, "About");
         adapter.addFragment(students_list, "Students");
         viewPager.setAdapter(adapter);
