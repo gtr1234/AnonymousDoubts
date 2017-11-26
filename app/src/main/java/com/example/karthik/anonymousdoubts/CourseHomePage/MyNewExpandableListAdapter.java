@@ -44,15 +44,76 @@ public class MyNewExpandableListAdapter extends BaseExpandableListAdapter {
         return weekMetaData.get(i).lectureMetaData.size();
     }
 
+    public Object getDates(int i){
 
+        String date_string="";
+        String startDate = getDateFormat(weekMetaData.get(i).getStartDate());
+        String endDate   = getDateFormat(weekMetaData.get(i).getEndDate());
+
+        date_string = startDate+" - "+endDate;
+        return date_string;
+    }
+
+    public String getDateFormat(String dateFormat){
+
+        String []format = dateFormat.split("/");
+        String date = format[0];
+        String month = "";
+        String year  = format[2];
+
+        switch (format[1]){
+
+            case "01":
+                month = " Jan '";
+                break;
+            case "02":
+                month = " Feb '";
+                break;
+            case "03":
+                month = " Mar '";
+                break;
+            case "04":
+                month = " Apr '";
+                break;
+            case "05":
+                month = " May '";
+                break;
+            case "06":
+                month = " Jun '";
+                break;
+            case "07":
+                month = " Jul '";
+                break;
+            case "08":
+                month = " Aug '";
+                break;
+            case "09":
+                month = " Sep '";
+                break;
+            case "10":
+                month = " Oct '";
+                break;
+            case "11":
+                month = " Nov '";
+                break;
+            case "12":
+                month = " Dec '";
+                break;
+
+                default:
+                    break;
+        }
+
+        date = date+month+year;
+        return date;
+    }
     @Override
     public Object getGroup(int i) {
 
-        String startDate = weekMetaData.get(i).getStartDate();
-        String endDate   = weekMetaData.get(i).getEndDate();
+
         String week_count = weekMetaData.get(i).getWeek_count();
-        Log.e(TAG,"size = " +Integer.toString(weekMetaData.get(i).lectureMetaData.size()));
-        return "Week "+week_count+" "+startDate+" "+endDate;
+        //Log.e(TAG,"size = " +Integer.toString(weekMetaData.get(i).lectureMetaData.size()));
+        return "Week "+week_count;
         //return "WEEK";
     }
 
@@ -70,7 +131,7 @@ public class MyNewExpandableListAdapter extends BaseExpandableListAdapter {
     public Object getChild(int i, int i1) {
 
         String day = weekMetaData.get(i).lectureMetaData.get(i1).getDay();
-        String date = weekMetaData.get(i).lectureMetaData.get(i1).getDate();
+        String date = getDateFormat(weekMetaData.get(i).lectureMetaData.get(i1).getDate());
 
         //return "Lecture";
         return day+" - "+date;
@@ -94,6 +155,7 @@ public class MyNewExpandableListAdapter extends BaseExpandableListAdapter {
     public View getGroupView(int i, boolean b, View view, ViewGroup viewGroup) {
         view = null;
         String headerTitle = (String)getGroup(i);
+        String dates = (String)getDates(i);
 
         if(view==null){
 
@@ -102,9 +164,13 @@ public class MyNewExpandableListAdapter extends BaseExpandableListAdapter {
 
         }
         TextView elistviewHeader = (TextView)view.findViewById(R.id.elistview_header);
-        elistviewHeader.setTypeface(null, Typeface.BOLD);
+        TextView elistviewHeader_sub = (TextView)view.findViewById(R.id.elistview_header_dates);
+        elistviewHeader.setTypeface(null, Typeface.NORMAL);
+        elistviewHeader_sub.setTypeface(null,Typeface.NORMAL);
+
+        elistviewHeader_sub.setText(dates);
         elistviewHeader.setText(headerTitle);
-        Log.e(TAG,"------headerText--------"+headerTitle);
+       // Log.e(TAG,"------headerText--------"+headerTitle);
         return view;
 
     }
