@@ -36,10 +36,13 @@ public class EmailVerificationActivity extends AppCompatActivity {
     String institution;
 
     Button resendButton;
+    Button alreadyVerified;
     TextView welcomeTextView;
     TextView verifyEmailTextView;
 
     ProgressDialog progressDialog;
+
+    FirebaseUser firebaseUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,7 +50,7 @@ public class EmailVerificationActivity extends AppCompatActivity {
         setContentView(R.layout.activity_email_verification);
 
         mAuth = FirebaseAuth.getInstance();
-        final FirebaseUser firebaseUser = mAuth.getCurrentUser();
+        firebaseUser = mAuth.getCurrentUser();
         userId = firebaseUser.getUid();
 
         institution = firebaseUser.getEmail().split("@")[1];
@@ -59,6 +62,7 @@ public class EmailVerificationActivity extends AppCompatActivity {
 
 
         resendButton = (Button) findViewById(R.id.resend_button);
+        alreadyVerified = (Button) findViewById(R.id.alreadyVerified);
         welcomeTextView = (TextView) findViewById(R.id.welcomeText);
         verifyEmailTextView = (TextView) findViewById(R.id.verifyEmailText);
 
@@ -94,6 +98,22 @@ public class EmailVerificationActivity extends AppCompatActivity {
         });
 
 
+        alreadyVerified.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(firebaseUser.isEmailVerified()){
+                    Intent myIntent = new Intent(EmailVerificationActivity.this, CourseDiscovery.class);
+                    EmailVerificationActivity.this.startActivity(myIntent);
+                    finish();
+                }
+                else{
+                    Toast.makeText(EmailVerificationActivity.this,
+                            "Please verify your Email first",Toast.LENGTH_SHORT ).show();
+                }
+            }
+        });
+
+
         emailVerifiedEndPoint.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -101,7 +121,7 @@ public class EmailVerificationActivity extends AppCompatActivity {
 
                 progressDialog.dismiss();
 
-                if(isEmailVerified || firebaseUser.isEmailVerified()){
+                if(isEmailVerified){
                     Intent myIntent = new Intent(EmailVerificationActivity.this, CourseDiscovery.class);
                     EmailVerificationActivity.this.startActivity(myIntent);
                     finish();

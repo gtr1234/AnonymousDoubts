@@ -379,6 +379,9 @@ public class CourseDiscovery extends AppCompatActivity {
                         progressDialog.dismiss();
                     }
                 }
+                else{
+                    progressDialog.dismiss();
+                }
             }
         }, 3000);
 
@@ -553,6 +556,10 @@ public class CourseDiscovery extends AppCompatActivity {
 
         // set prompts.xml to alertdialog builder
         alertDialogBuilder.setView(promptsView);
+
+        TextView alertDialogTextView = (TextView) findViewById(R.id.alertdialogTextView);
+        alertDialogTextView.setText("Enter the Passcode for "+courseCode);
+        alertDialogBuilder.setTitle("Passcode");
 
         final EditText userInput = (EditText) promptsView
                 .findViewById(R.id.passcodeInput);
