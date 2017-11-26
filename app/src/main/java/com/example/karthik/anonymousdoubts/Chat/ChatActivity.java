@@ -69,34 +69,16 @@ public class ChatActivity extends AppCompatActivity {
         sendButton = (Button) findViewById(R.id.button_chatbox_send);
         switch1 = (Switch) findViewById(R.id.switch1);
 
+
         String lectureID = getIntent().getStringExtra("lectureID");
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        if(switch1.isEnabled()){
-            setIncognitoUI();
-            isPrivate = true;
-        }
-
-        switch1.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if(isChecked){
-                    setIncognitoUI();
-                    isPrivate = true;
-                    Log.d(TAG,"Set Privacy to TRUE");
-                }else{
-                    setNormalUI();
-                    isPrivate = false;
-                    Log.d(TAG,"Set Privacy to FALSE");
-                }
-            }
-        });
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         String institution = firebaseUser.getEmail().split("@")[1];
         institution = institution.replace(".","");
-
 
         instituteRef = ref.child("institution").child(institution);
         DatabaseReference userEndPoint = instituteRef.child("users").child(firebaseUser.getUid());
@@ -120,6 +102,34 @@ public class ChatActivity extends AppCompatActivity {
         recyclerView = (RecyclerView) findViewById(R.id.reyclerview_message_list);
         recyclerView.setLayoutManager(new LinearLayoutManager(ChatActivity.this));
         recyclerView.setAdapter(messageListAdapter);
+
+
+        if(isTeacher){
+            isPrivate = false;
+            switch1.setVisibility(View.INVISIBLE);
+        }else{
+
+            if(switch1.isEnabled()){
+                setIncognitoUI(true);
+                isPrivate = true;
+            }
+
+            switch1.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                    if(isChecked){
+                        setIncognitoUI(false);
+                        isPrivate = true;
+                        Log.d(TAG,"Set Privacy to TRUE");
+                    }else{
+                        setNormalUI();
+                        isPrivate = false;
+                        Log.d(TAG,"Set Privacy to FALSE");
+                    }
+                }
+            });
+        }
+
 
 
 
@@ -201,8 +211,6 @@ public class ChatActivity extends AppCompatActivity {
 
 
     private void setNormalUI() {
-        getSupportActionBar().setBackgroundDrawable( new ColorDrawable(ContextCompat.getColor(this,R.color.primary)));
-        //ll_chatbox.setBackground(new ColorDrawable(Color.WHITE));
 
         int colorFrom = ContextCompat.getColor(this,R.color.black);
         int colorTo = ContextCompat.getColor(this,R.color.primary);
@@ -241,45 +249,49 @@ public class ChatActivity extends AppCompatActivity {
         switch1.setText("Normal");
     }
 
-    protected void setIncognitoUI(){
-        //ColorDrawable cdBlack = new ColorDrawable(Color.BLACK);
-        //getSupportActionBar().setBackgroundDrawable(cdBlack);
-        //ll_chatbox.setBackground(cdBlack);
+    protected void setIncognitoUI(boolean firstTime) {
+        if (firstTime) {
+            getSupportActionBar().setBackgroundDrawable(new ColorDrawable(ContextCompat.getColor(this,R.color.black)));
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                getWindow().setStatusBarColor(getResources().getColor(R.color.black));
+                ll_chatbox.setBackgroundColor(getResources().getColor(R.color.black));
+            }
+        } else{
+            int colorFrom = ContextCompat.getColor(this, R.color.primary);
+            int chatBoxColorFrom = ContextCompat.getColor(this, R.color.white);
+            int colorTo = ContextCompat.getColor(this, R.color.black);
+            ValueAnimator colorAnimation = ValueAnimator.ofObject(new ArgbEvaluator(), colorFrom, colorTo);
+            ValueAnimator colorAnimation2 = ValueAnimator.ofObject(new ArgbEvaluator(), chatBoxColorFrom, colorTo);
+            colorAnimation.setDuration(500); // milliseconds
+            colorAnimation2.setDuration(500);
+            final Window window = getWindow();
 
-        int colorFrom = ContextCompat.getColor(this,R.color.primary);
-        int chatBoxColorFrom = ContextCompat.getColor(this,R.color.white);
-        int colorTo = ContextCompat.getColor(this,R.color.black);
-        ValueAnimator colorAnimation = ValueAnimator.ofObject(new ArgbEvaluator(), colorFrom, colorTo);
-        ValueAnimator colorAnimation2 = ValueAnimator.ofObject(new ArgbEvaluator(),chatBoxColorFrom,colorTo);
-        colorAnimation.setDuration(500); // milliseconds
-        colorAnimation2.setDuration(500);
-        final Window window = getWindow();
+            colorAnimation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
 
-        colorAnimation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                @Override
+                public void onAnimationUpdate(ValueAnimator animator) {
+                    int val = (int) animator.getAnimatedValue();
 
-            @Override
-            public void onAnimationUpdate(ValueAnimator animator) {
-                int val = (int) animator.getAnimatedValue();
-
-                getSupportActionBar().setBackgroundDrawable(new ColorDrawable(val));
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    window.setStatusBarColor(val);
+                    getSupportActionBar().setBackgroundDrawable(new ColorDrawable(val));
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        window.setStatusBarColor(val);
+                    }
                 }
-            }
 
-        });
+            });
 
-        colorAnimation2.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            colorAnimation2.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
 
-            @Override
-            public void onAnimationUpdate(ValueAnimator animator) {
-                ll_chatbox.setBackgroundColor((int) animator.getAnimatedValue());
-            }
+                @Override
+                public void onAnimationUpdate(ValueAnimator animator) {
+                    ll_chatbox.setBackgroundColor((int) animator.getAnimatedValue());
+                }
 
-        });
+            });
 
-        colorAnimation.start();
-        colorAnimation2.start();
+            colorAnimation.start();
+            colorAnimation2.start();
+        }
 
         et_chatbox.setTextColor(Color.WHITE);
         sendButton.setTextColor(Color.WHITE);
