@@ -162,6 +162,7 @@ public class CourseDiscovery extends AppCompatActivity {
         courseUIdsEndPoint = userIdEndPoint.child("courseUIds");
         courseMetaDataEndPoint = mDatabase.child("institution").child(institution);
 
+
         // fast adapters usage
 
         final StickyHeaderAdapter stickyHeaderAdapter = new StickyHeaderAdapter();

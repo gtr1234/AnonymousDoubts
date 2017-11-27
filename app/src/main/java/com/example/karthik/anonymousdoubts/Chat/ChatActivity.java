@@ -2,9 +2,11 @@ package com.example.karthik.anonymousdoubts.Chat;
 
 import android.animation.ArgbEvaluator;
 import android.animation.ValueAnimator;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
+import android.support.v4.app.NavUtils;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -12,6 +14,8 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.KeyEvent;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
@@ -81,26 +85,18 @@ public class ChatActivity extends AppCompatActivity {
         institution = institution.replace(".","");
 
         instituteRef = ref.child("institution").child(institution);
-        DatabaseReference userEndPoint = instituteRef.child("users").child(firebaseUser.getUid());
 
-        userEndPoint.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                isTeacher = (boolean) dataSnapshot.child("isTeacher").getValue();
-                userName = dataSnapshot.child("name").getValue(String.class);
-            }
+        isTeacher = getIntent().getBooleanExtra("isTeacher",false);
+        userName = getIntent().getStringExtra("userName");
 
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
 
-            }
-        });
 
         messageList = new ArrayList<>();
         messageListAdapter = new MessageListAdapter(ChatActivity.this, messageList,firebaseUser.getUid(),isTeacher);
 
         recyclerView = (RecyclerView) findViewById(R.id.reyclerview_message_list);
-        recyclerView.setLayoutManager(new LinearLayoutManager(ChatActivity.this));
+        final LinearLayoutManager linearLayoutManager= new LinearLayoutManager(ChatActivity.this);
+        recyclerView.setLayoutManager(linearLayoutManager);
         recyclerView.setAdapter(messageListAdapter);
 
 
@@ -108,7 +104,6 @@ public class ChatActivity extends AppCompatActivity {
             isPrivate = false;
             switch1.setVisibility(View.INVISIBLE);
         }else{
-
             if(switch1.isEnabled()){
                 setIncognitoUI(true);
                 isPrivate = true;
@@ -146,9 +141,11 @@ public class ChatActivity extends AppCompatActivity {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         ChatMessage message = dataSnapshot.getValue(ChatMessage.class);
-                        //Log.d(TAG,message.getMessageText());
+
                         messageList.add(message);
                         messageListAdapter.updateMessageList(messageList);
+
+                        recyclerView.scrollToPosition(messageList.size()-1);
                     }
 
                     @Override
@@ -298,5 +295,15 @@ public class ChatActivity extends AppCompatActivity {
         switch1.setText("Anonymous");
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
 
+        switch(item.getItemId()){
+            case android.R.id.home:
+                super.onBackPressed();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
 }

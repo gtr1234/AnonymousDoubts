@@ -55,7 +55,8 @@ public class Course_LectureFragment extends Fragment {
     String week = "Week ";
     private static String institution;
 
-
+    private String userName;
+    private boolean isTeacher;
 
     //private ArrayList<WeekMetaData> weekMetaDataArrayList = new ArrayList<>();;
 
@@ -116,7 +117,18 @@ public class Course_LectureFragment extends Fragment {
 
         progressDialog.show();
 
+        userIdEndPoint.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                isTeacher = (boolean) dataSnapshot.child("isTeacher").getValue();
+                userName = dataSnapshot.child("name").getValue(String.class);
+            }
 
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
 
         weekIdEndPoint.addValueEventListener(new ValueEventListener() {
 
@@ -240,6 +252,9 @@ public class Course_LectureFragment extends Fragment {
                 String lectureID = listAdapter.getUid(i,i1);
 
                 intent.putExtra("lectureID",lectureID);
+                intent.putExtra("isTeacher",isTeacher);
+                intent.putExtra("userName",userName);
+
                 startActivity(intent);
 
                 return true;

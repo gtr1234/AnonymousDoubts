@@ -9,6 +9,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
 
 import com.example.karthik.anonymousdoubts.CourseCreationAndDiscovery.CourseDiscovery;
 import com.example.karthik.anonymousdoubts.CourseHomePage.Course_AboutMeFragment;
@@ -114,6 +115,17 @@ public class CourseHomepageActivity extends AppCompatActivity {
         }
 
 
+    }
+
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        switch(item.getItemId()){
+            case android.R.id.home:
+                onBackPressed();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
 }
